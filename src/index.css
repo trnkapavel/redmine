@@ -7,7 +7,7 @@
   --border-subtle: #1e1e1e;
   --text-primary: #f0f0f0;
   --text-secondary: #aaa;
-  --text-muted: #555;
+  --text-muted: #888;
   --accent: #4a9eff;
   --urgent: #e53e3e;
   --urgent-bg: rgba(229, 62, 62, 0.08);
@@ -16,7 +16,7 @@
   --high-bg: rgba(221, 107, 32, 0.08);
   --high-border: rgba(221, 107, 32, 0.15);
   --normal: #4a9eff;
-  --low: #555;
+  --low: #888;
 }
 
 @media (prefers-color-scheme: light) {
@@ -56,7 +56,7 @@ button { background: none; border: none; cursor: pointer; color: inherit; font-f
 .sidebar-item-left { display: flex; align-items: center; gap: 6px; }
 .sidebar-item:hover { color: var(--text-primary); }
 .sidebar-item.active { background: rgba(255,255,255,0.10); border-left-color: var(--accent); color: var(--text-primary); }
-.sidebar-item-count { font-size: 10px; background: var(--bg-toolbar); border-radius: 10px; padding: 1px 6px; }
+.sidebar-item-count { font-size: 10px; background: rgba(255,255,255,0.10); border-radius: 10px; padding: 1px 6px; color: var(--text-secondary); }
 .sidebar-item-count.urgent { background: var(--urgent-bg); color: var(--urgent); }
 
 .task-list { flex: 1; background: transparent; overflow-y: auto; }
