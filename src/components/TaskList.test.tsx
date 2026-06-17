@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react'
 import { TaskList } from './TaskList'
 import { useTasksStore } from '../store/tasks'
 import { RedmineIssue } from '../types'
@@ -44,5 +44,26 @@ describe('TaskList', () => {
   it('shows issue number', () => {
     render(<TaskList />)
     expect(screen.getByText(/#1/)).toBeTruthy()
+  })
+
+  it('calls onSelectTask with issue id when task item is clicked', () => {
+    const onSelectTask = vi.fn()
+    render(<TaskList onSelectTask={onSelectTask} />)
+    const items = screen.getAllByRole('button')
+    const taskButton = items.find(btn => btn.className.includes('task-item'))
+    expect(taskButton).toBeTruthy()
+    if (taskButton) fireEvent.click(taskButton)
+    expect(onSelectTask).toHaveBeenCalledWith(expect.any(Number))
+  })
+
+  it('does not call onSelectTask when ExternalLink icon is clicked', () => {
+    const onSelectTask = vi.fn()
+    render(<TaskList onSelectTask={onSelectTask} />)
+    // Find the external link span (task-hover-icon)
+    const hoverIcons = document.querySelectorAll('.task-hover-icon')
+    if (hoverIcons.length > 0) {
+      fireEvent.click(hoverIcons[0])
+    }
+    expect(onSelectTask).not.toHaveBeenCalled()
   })
 })
