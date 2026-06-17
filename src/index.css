@@ -73,8 +73,10 @@ button { background: none; border: none; cursor: pointer; color: inherit; font-f
 .priority-group-low .task-group-header { color: var(--low); }
 .priority-group-unknown .task-group-header { color: var(--text-muted); }
 
-.task-item { width: 100%; padding: 8px 14px; border-bottom: 1px solid var(--border-subtle); display: flex; flex-direction: column; gap: 2px; }
-.task-item:hover { filter: brightness(1.1); }
+.task-item { width: 100%; padding: 6px 12px; border-bottom: 1px solid var(--border-subtle); display: flex; flex-direction: column; gap: 2px; }
+.task-item:hover { background: rgba(255,255,255,0.06); filter: none; }
+.task-hover-icon { opacity: 0; transition: opacity 150ms ease; }
+.task-item:hover .task-hover-icon { opacity: 1; }
 .priority-group-urgent .task-item { border-bottom-color: var(--urgent-border); }
 .priority-group-high .task-item { border-bottom-color: var(--high-border); }
 .task-item-main { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }

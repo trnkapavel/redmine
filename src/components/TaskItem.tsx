@@ -1,6 +1,7 @@
 import { invoke } from '@tauri-apps/api/core'
 import { useConfigStore } from '../store/config'
 import { RedmineIssue } from '../types'
+import { ExternalLink } from 'lucide-react'
 
 function formatDeadline(dueDate: string | null): { text: string; urgent: boolean } {
   if (!dueDate) return { text: '—', urgent: false }
@@ -34,9 +35,12 @@ export function TaskItem({ issue }: Props) {
     <button className={`task-item priority-${issue.priority}`} onClick={handleClick}>
       <div className="task-item-main">
         <span className="task-subject">{issue.subject}</span>
-        <span className={`task-deadline ${deadline.urgent ? 'urgent' : ''}`}>
-          {deadline.text}
-        </span>
+        {issue.dueDate && (
+          <span className={`task-deadline ${deadline.urgent ? 'urgent' : ''}`}>
+            {deadline.text}
+          </span>
+        )}
+        <ExternalLink size={14} className="task-hover-icon" />
       </div>
       <div className="task-meta">
         {issue.projectName} · #{issue.id}
