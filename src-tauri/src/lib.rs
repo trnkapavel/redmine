@@ -1,22 +1,14 @@
 pub mod redmine;
-
-// Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 pub mod store;
 pub mod poller;
 pub mod notifications;
-#[tauri::command]
-fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
+pub mod commands;
+
+use std::sync::{Arc, Mutex};
+use store::Config;
+
+pub struct AppState {
+    pub config: Arc<Mutex<Config>>,
 }
 
-#[cfg_attr(mobile, tauri::mobile_entry_point)]
-pub fn run() {
-    tauri::Builder::default()
-        .plugin(tauri_plugin_shell::init())
-        .plugin(tauri_plugin_notification::init())
-        .plugin(tauri_plugin_autostart::init(tauri_plugin_autostart::MacosLauncher::LaunchAgent, Some(vec![])))
-        .plugin(tauri_plugin_store::Builder::default().build())
-        .invoke_handler(tauri::generate_handler![greet])
-        .run(tauri::generate_context!())
-        .expect("error while running tauri application");
-}
+pub use commands::{get_config, save_config_cmd, open_in_browser};
