@@ -68,7 +68,7 @@ export interface Member {
 export interface IssueDetail {
   id: number
   subject: string
-  description: string | null
+  description: string
   projectId: number
   projectName: string
   status: string

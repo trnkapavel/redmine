@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { invoke } from '@tauri-apps/api/core'
 import { ArrowLeft, Check, UserCheck } from 'lucide-react'
 import type { IssueDetail, Member } from '../types'
@@ -15,6 +15,7 @@ export function TaskDetail({ issueId, onBack, onActionDone }: Props) {
   const [error, setError] = useState<string | null>(null)
   const [reassignOpen, setReassignOpen] = useState(false)
   const [working, setWorking] = useState(false)
+  const reassignRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     setLoading(true)
@@ -24,6 +25,17 @@ export function TaskDetail({ issueId, onBack, onActionDone }: Props) {
       .then(d => { setDetail(d); setLoading(false) })
       .catch(e => { setError(String(e)); setLoading(false) })
   }, [issueId])
+
+  useEffect(() => {
+    if (!reassignOpen) return
+    const handler = (e: MouseEvent) => {
+      if (reassignRef.current && !reassignRef.current.contains(e.target as Node)) {
+        setReassignOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [reassignOpen])
 
   const handleResolve = async () => {
     if (!detail || detail.closedStatuses.length === 0) return
@@ -114,7 +126,7 @@ export function TaskDetail({ issueId, onBack, onActionDone }: Props) {
                 Vyřeším
               </button>
             )}
-            <div className="task-detail-reassign-wrapper">
+            <div className="task-detail-reassign-wrapper" ref={reassignRef}>
               <button
                 className="task-detail-btn task-detail-btn-reassign"
                 onClick={() => setReassignOpen(o => !o)}
