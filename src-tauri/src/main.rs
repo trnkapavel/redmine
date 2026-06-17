@@ -88,7 +88,7 @@ fn main() {
                                 let y = (icon_y + icon_h + 5.0) as i32;
                                 let x = x.max(5);
                                 let max_x = if let Ok(Some(monitor)) = window.current_monitor() {
-                                    (monitor.size().width as i32) - 445
+                                    (monitor.size().width as i32) - win_w as i32 - 5
                                 } else {
                                     i32::MAX
                                 };
