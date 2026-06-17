@@ -75,11 +75,11 @@ button { background: none; border: none; cursor: pointer; color: inherit; font-f
 
 .task-item { width: 100%; padding: 6px 12px; border-bottom: 1px solid var(--border-subtle); display: flex; flex-direction: column; gap: 2px; }
 .task-item:hover { background: rgba(255,255,255,0.06); filter: none; }
-.task-hover-icon { opacity: 0; transition: opacity 150ms ease; }
+.task-hover-icon { opacity: 0; transition: opacity 150ms ease; color: var(--text-muted); flex-shrink: 0; }
 .task-item:hover .task-hover-icon { opacity: 1; }
 .priority-group-urgent .task-item { border-bottom-color: var(--urgent-border); }
 .priority-group-high .task-item { border-bottom-color: var(--high-border); }
-.task-item-main { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+.task-item-main { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
 .task-subject { color: var(--text-primary); font-size: 12px; flex: 1; }
 .task-deadline { color: var(--text-muted); font-size: 11px; flex-shrink: 0; }
 .task-deadline.urgent { color: var(--urgent); font-weight: 600; }
