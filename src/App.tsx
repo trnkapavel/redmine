@@ -10,9 +10,8 @@ import './index.css'
 
 export default function App() {
   const [showSettings, setShowSettings] = useState(false)
-  const [lastSync, setLastSync] = useState<string | null>(null)
   const { setIssues, setProjects } = useTasksStore()
-  const { load, loaded } = useConfigStore()
+  const { load } = useConfigStore()
 
   useEffect(() => {
     load()
@@ -21,34 +20,22 @@ export default function App() {
   useEffect(() => {
     const unlistenTasks = listen<RedmineIssue[]>('tasks-updated', (event) => {
       setIssues(event.payload)
-      setLastSync(new Date().toLocaleTimeString('cs', { hour: '2-digit', minute: '2-digit' }))
     })
     const unlistenProjects = listen<RedmineProject[]>('projects-updated', (event) => {
       setProjects(event.payload)
     })
+    const unlistenSettings = listen('show-settings', () => {
+      setShowSettings(true)
+    })
     return () => {
       unlistenTasks.then(fn => fn())
       unlistenProjects.then(fn => fn())
+      unlistenSettings.then(fn => fn())
     }
   }, [])
 
-  if (!loaded) return null
-
   return (
-    <div>
-      <div className="titlebar">
-        <div className="titlebar-controls">
-          <span className="titlebar-dot close" />
-          <span className="titlebar-dot minimize" />
-          <span className="titlebar-dot maximize" />
-        </div>
-        <span className="titlebar-title">Redmine Focus</span>
-        <div className="titlebar-right">
-          {lastSync && <span>↻ {lastSync}</span>}
-          <button className="titlebar-settings-btn" onClick={() => setShowSettings(true)}>⚙</button>
-        </div>
-      </div>
-
+    <div className="app-root">
       <div className="app-body">
         <Sidebar />
         <TaskList />
