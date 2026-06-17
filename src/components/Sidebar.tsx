@@ -1,3 +1,4 @@
+import { LayoutList, Folder, ArrowUpNarrowWide, CalendarClock } from 'lucide-react'
 import { useTasksStore } from '../store/tasks'
 
 export function Sidebar() {
@@ -17,7 +18,10 @@ export function Sidebar() {
         className={`sidebar-item ${activeProjectId === null ? 'active' : ''}`}
         onClick={() => setActiveProject(null)}
       >
-        <span className="sidebar-item-name">Vše</span>
+        <span className="sidebar-item-left">
+          <LayoutList size={13} />
+          <span className="sidebar-item-name">Vše</span>
+        </span>
         <span className="sidebar-item-count">{issues.length}</span>
       </button>
 
@@ -29,7 +33,10 @@ export function Sidebar() {
             className={`sidebar-item ${activeProjectId === project.id ? 'active' : ''}`}
             onClick={() => setActiveProject(project.id)}
           >
-            <span className="sidebar-item-name">{project.name}</span>
+            <span className="sidebar-item-left">
+              <Folder size={13} />
+              <span className="sidebar-item-name">{project.name}</span>
+            </span>
             <span className={`sidebar-item-count ${urgent > 0 ? 'urgent' : ''}`}>
               {countForProject(project.id)}
             </span>
@@ -43,14 +50,20 @@ export function Sidebar() {
         className={`sidebar-item ${sortMode === 'priority' ? 'active' : ''}`}
         onClick={() => setSortMode('priority')}
       >
-        <span className="sidebar-item-name">↑ Priorita</span>
+        <span className="sidebar-item-left">
+          <ArrowUpNarrowWide size={13} />
+          <span className="sidebar-item-name">Priorita</span>
+        </span>
       </button>
 
       <button
         className={`sidebar-item ${sortMode === 'deadline' ? 'active' : ''}`}
         onClick={() => setSortMode('deadline')}
       >
-        <span className="sidebar-item-name">↑ Deadline</span>
+        <span className="sidebar-item-left">
+          <CalendarClock size={13} />
+          <span className="sidebar-item-name">Deadline</span>
+        </span>
       </button>
     </aside>
   )

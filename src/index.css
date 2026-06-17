@@ -53,6 +53,7 @@ button { background: none; border: none; cursor: pointer; color: inherit; font-f
 .sidebar { width: 140px; background: rgba(255,255,255,0.04); border-right: 1px solid rgba(255,255,255,0.08); padding: 12px 0; flex-shrink: 0; overflow-y: auto; }
 .sidebar-section-label { padding: 0 12px; margin-bottom: 6px; color: var(--text-muted); font-size: 10px; letter-spacing: 1px; }
 .sidebar-item { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 6px 12px; color: var(--text-muted); border-left: 2px solid transparent; }
+.sidebar-item-left { display: flex; align-items: center; gap: 6px; }
 .sidebar-item:hover { color: var(--text-primary); }
 .sidebar-item.active { background: rgba(255,255,255,0.10); border-left-color: var(--accent); color: var(--text-primary); }
 .sidebar-item-count { font-size: 10px; background: var(--bg-toolbar); border-radius: 10px; padding: 1px 6px; }
