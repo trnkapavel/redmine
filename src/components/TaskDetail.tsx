@@ -1,0 +1,142 @@
+import { useState, useEffect } from 'react'
+import { invoke } from '@tauri-apps/api/core'
+import { ArrowLeft, Check, UserCheck } from 'lucide-react'
+import type { IssueDetail, Member } from '../types'
+
+interface Props {
+  issueId: number
+  onBack: () => void
+  onActionDone: () => void
+}
+
+export function TaskDetail({ issueId, onBack, onActionDone }: Props) {
+  const [detail, setDetail] = useState<IssueDetail | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [reassignOpen, setReassignOpen] = useState(false)
+  const [working, setWorking] = useState(false)
+
+  useEffect(() => {
+    setLoading(true)
+    setError(null)
+    setDetail(null)
+    invoke<IssueDetail>('get_issue_detail', { id: issueId })
+      .then(d => { setDetail(d); setLoading(false) })
+      .catch(e => { setError(String(e)); setLoading(false) })
+  }, [issueId])
+
+  const handleResolve = async () => {
+    if (!detail || detail.closedStatuses.length === 0) return
+    setWorking(true)
+    try {
+      await invoke('update_issue_cmd', {
+        id: issueId,
+        statusId: detail.closedStatuses[0].id,
+        assignedToId: null,
+      })
+      await invoke('fetch_now')
+      onActionDone()
+    } catch (e) {
+      setError(String(e))
+      setWorking(false)
+    }
+  }
+
+  const handleReassign = async (member: Member) => {
+    setWorking(true)
+    setReassignOpen(false)
+    try {
+      await invoke('update_issue_cmd', {
+        id: issueId,
+        statusId: null,
+        assignedToId: member.id,
+      })
+      await invoke('fetch_now')
+      onActionDone()
+    } catch (e) {
+      setError(String(e))
+      setWorking(false)
+    }
+  }
+
+  return (
+    <div className="task-detail">
+      <div className="task-detail-header">
+        <button className="task-detail-back" onClick={onBack} aria-label="Zpět">
+          <ArrowLeft size={14} />
+        </button>
+        <span className="task-detail-id">#{issueId}</span>
+        {detail && <span className="task-detail-project">{detail.projectName}</span>}
+      </div>
+
+      {loading && <div className="task-detail-state">Načítám…</div>}
+      {error && <div className="task-detail-state task-detail-error">{error}</div>}
+
+      {detail && !loading && (
+        <>
+          <div className="task-detail-body">
+            <div className="task-detail-subject">{detail.subject}</div>
+
+            {detail.description && (
+              <div className="task-detail-description">{detail.description}</div>
+            )}
+
+            {detail.journals.filter(j => j.notes.trim()).length > 0 && (
+              <div className="task-detail-journals">
+                <div className="task-detail-section-label">KOMENTÁŘE</div>
+                {detail.journals.filter(j => j.notes.trim()).map(j => (
+                  <div key={j.id} className="task-detail-journal">
+                    <div className="task-detail-journal-meta">
+                      {j.authorName} · {formatDate(j.createdOn)}
+                    </div>
+                    <div className="task-detail-journal-notes">{j.notes}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="task-detail-footer">
+            {detail.closedStatuses.length > 0 && (
+              <button
+                className="task-detail-btn task-detail-btn-done"
+                onClick={handleResolve}
+                disabled={working}
+              >
+                <Check size={13} />
+                Vyřeším
+              </button>
+            )}
+            <div className="task-detail-reassign-wrapper">
+              <button
+                className="task-detail-btn task-detail-btn-reassign"
+                onClick={() => setReassignOpen(o => !o)}
+                disabled={working || detail.members.length === 0}
+              >
+                <UserCheck size={13} />
+                Předat
+              </button>
+              {reassignOpen && detail.members.length > 0 && (
+                <div className="task-detail-dropdown">
+                  {detail.members.map(m => (
+                    <button
+                      key={m.id}
+                      className="task-detail-dropdown-item"
+                      onClick={() => handleReassign(m)}
+                    >
+                      {m.name}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  )
+}
+
+function formatDate(iso: string): string {
+  return new Date(iso).toLocaleDateString('cs', { day: 'numeric', month: 'short' })
+}
