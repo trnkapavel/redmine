@@ -43,21 +43,12 @@
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif; font-size: 13px; background: var(--bg-primary); color: var(--text-primary); overflow: hidden; user-select: none; }
+html, body, #root { height: 580px; overflow: hidden; border-radius: 10px; background: transparent; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif; font-size: 13px; background: var(--bg-primary); color: var(--text-primary); overflow: hidden; user-select: none; border-radius: 10px; }
+.app-root { display: flex; flex-direction: column; height: 580px; border-radius: 10px; overflow: hidden; background: var(--bg-primary); border: 1px solid var(--border); }
 button { background: none; border: none; cursor: pointer; color: inherit; font-family: inherit; font-size: inherit; text-align: left; }
 
-.titlebar { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: var(--bg-toolbar); border-bottom: 1px solid var(--border); -webkit-app-region: drag; }
-.titlebar-controls { display: flex; gap: 6px; -webkit-app-region: no-drag; }
-.titlebar-dot { width: 10px; height: 10px; border-radius: 50%; }
-.titlebar-dot.close { background: #ff5f57; }
-.titlebar-dot.minimize { background: #febc2e; }
-.titlebar-dot.maximize { background: #28c840; }
-.titlebar-title { color: var(--text-muted); font-size: 11px; }
-.titlebar-right { display: flex; align-items: center; gap: 8px; color: var(--text-muted); font-size: 11px; -webkit-app-region: no-drag; }
-.titlebar-settings-btn { color: var(--text-muted); font-size: 16px; padding: 2px 4px; border-radius: 4px; }
-.titlebar-settings-btn:hover { color: var(--text-primary); }
-
-.app-body { display: flex; height: calc(580px - 41px); }
+.app-body { display: flex; height: 580px; overflow: hidden; }
 
 .sidebar { width: 140px; background: var(--bg-sidebar); border-right: 1px solid var(--border); padding: 12px 0; flex-shrink: 0; overflow-y: auto; }
 .sidebar-section-label { padding: 0 12px; margin-bottom: 6px; color: var(--text-muted); font-size: 10px; letter-spacing: 1px; }
