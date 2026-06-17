@@ -5,12 +5,14 @@ import { useTasksStore } from './store/tasks'
 import { useConfigStore } from './store/config'
 import { Sidebar } from './components/Sidebar'
 import { TaskList } from './components/TaskList'
+import { TaskDetail } from './components/TaskDetail'
 import { Settings } from './components/Settings'
 import { RedmineIssue, RedmineProject } from './types'
 import './index.css'
 
 export default function App() {
   const [showSettings, setShowSettings] = useState(false)
+  const [selectedIssueId, setSelectedIssueId] = useState<number | null>(null)
   const { setIssues, setProjects } = useTasksStore()
   const { load } = useConfigStore()
 
@@ -21,7 +23,6 @@ export default function App() {
   useEffect(() => {
     let unlisteners: (() => void)[] = []
 
-    // listen() is async — wait for all to resolve before fetching
     Promise.all([
       listen<RedmineIssue[]>('tasks-updated', (event) => setIssues(event.payload)),
       listen<RedmineProject[]>('projects-updated', (event) => setProjects(event.payload)),
@@ -38,7 +39,18 @@ export default function App() {
     <div className="app-root">
       <div className="app-body">
         <Sidebar />
-        <TaskList />
+        <div className="task-list-wrapper">
+          <TaskList onSelectTask={setSelectedIssueId} />
+          {selectedIssueId !== null && (
+            <div className="task-detail-slide">
+              <TaskDetail
+                issueId={selectedIssueId}
+                onBack={() => setSelectedIssueId(null)}
+                onActionDone={() => setSelectedIssueId(null)}
+              />
+            </div>
+          )}
+        </div>
       </div>
 
       {showSettings && <Settings onClose={() => setShowSettings(false)} />}
