@@ -30,7 +30,7 @@ fn main() {
             let menu = Menu::with_items(app, &[&refresh_item, &settings_item, &separator, &quit_item])?;
 
             TrayIconBuilder::with_id("main")
-                .icon(app.default_window_icon().unwrap().clone())
+                .icon(app.default_window_icon().expect("tray icon must be configured").clone())
                 .tooltip("Redmine Focus")
                 .menu(&menu)
                 .show_menu_on_left_click(false)
@@ -45,19 +45,7 @@ fn main() {
                                     (cfg.redmine_url.clone(), cfg.api_key.clone())
                                 };
                                 if !url.is_empty() && !key.is_empty() {
-                                    use redmine_focus_lib::redmine::{fetch_issues, fetch_projects};
-                                    if let Ok(issues) = fetch_issues(&url, &key).await {
-                                        let _ = app_clone.emit("tasks-updated", &issues);
-                                        let urgent = issues.iter().filter(|i| i.priority == redmine_focus_lib::redmine::Priority::Urgent).count();
-                                        let _ = app_clone.emit("urgent-count", urgent);
-                                        if let Some(tray) = app_clone.tray_by_id("main") {
-                                            let title = if urgent > 0 { Some(format!(" {}", urgent)) } else { None };
-                                            let _ = tray.set_title(title.as_deref());
-                                        }
-                                    }
-                                    if let Ok(projects) = fetch_projects(&url, &key).await {
-                                        let _ = app_clone.emit("projects-updated", &projects);
-                                    }
+                                    redmine_focus_lib::commands::do_fetch(&app_clone, &url, &key).await;
                                 }
                             });
                         }
@@ -87,8 +75,9 @@ fn main() {
                                 let _ = window.hide();
                             } else {
                                 // Pozicovat okno pod tray ikonou
-                                let pos = rect.position.to_physical::<f64>(1.0);
-                                let size = rect.size.to_physical::<f64>(1.0);
+                                let scale = window.scale_factor().unwrap_or(1.0);
+                                let pos = rect.position.to_physical::<f64>(scale);
+                                let size = rect.size.to_physical::<f64>(scale);
                                 let icon_x = pos.x;
                                 let icon_y = pos.y;
                                 let icon_w = size.width;
@@ -98,6 +87,12 @@ fn main() {
                                 let x = (icon_x + icon_w / 2.0 - win_w / 2.0) as i32;
                                 let y = (icon_y + icon_h + 5.0) as i32;
                                 let x = x.max(5);
+                                let max_x = if let Ok(Some(monitor)) = window.current_monitor() {
+                                    (monitor.size().width as i32) - 445
+                                } else {
+                                    i32::MAX
+                                };
+                                let x = x.min(max_x);
 
                                 let _ = window.set_position(tauri::PhysicalPosition::new(x, y));
                                 let _ = window.show();
@@ -109,14 +104,14 @@ fn main() {
                 .build(app)?;
 
             // Focus-lost → schovat okno
-            if let Some(window) = app.get_webview_window("main") {
-                let window_clone = window.clone();
-                window.on_window_event(move |event| {
-                    if let tauri::WindowEvent::Focused(false) = event {
-                        let _ = window_clone.hide();
-                    }
-                });
-            }
+            let window = app.get_webview_window("main")
+                .expect("main window must exist at setup");
+            let window_clone = window.clone();
+            window.on_window_event(move |event| {
+                if let tauri::WindowEvent::Focused(false) = event {
+                    let _ = window_clone.hide();
+                }
+            });
 
             let app_handle = app.handle().clone();
             tauri::async_runtime::spawn(async move {
