@@ -80,7 +80,7 @@ button { background: none; border: none; cursor: pointer; color: inherit; font-f
 .priority-group-urgent .task-item { border-bottom-color: var(--urgent-border); }
 .priority-group-high .task-item { border-bottom-color: var(--high-border); }
 .task-item-main { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-.task-subject { color: var(--text-primary); font-size: 12px; flex: 1; }
+.task-subject { color: var(--text-primary); font-size: 12px; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .task-deadline { color: var(--text-muted); font-size: 11px; flex-shrink: 0; }
 .task-deadline.urgent { color: var(--urgent); font-weight: 600; }
 .task-meta { color: var(--text-muted); font-size: 10px; }

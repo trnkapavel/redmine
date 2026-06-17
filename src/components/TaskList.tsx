@@ -1,4 +1,5 @@
 import { AlertCircle, TrendingUp, Circle, Minus } from 'lucide-react'
+import type { ReactElement } from 'react'
 import { useTasksStore } from '../store/tasks'
 import { TaskItem } from './TaskItem'
 import { Priority, PRIORITY_ORDER } from '../types'
@@ -11,7 +12,7 @@ const PRIORITY_LABELS: Record<Priority, string> = {
   unknown: 'OSTATNÍ',
 }
 
-const PRIORITY_ICONS: Record<Priority, JSX.Element> = {
+const PRIORITY_ICONS: Record<Priority, ReactElement> = {
   urgent: <AlertCircle size={12} />,
   high: <TrendingUp size={12} />,
   normal: <Circle size={12} />,
