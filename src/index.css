@@ -67,8 +67,6 @@ button { background: none; border: none; cursor: pointer; color: inherit; font-f
 .priority-group-urgent { background: rgba(229, 62, 62, 0.08); }
 .priority-group-high { background: rgba(221, 107, 32, 0.08); }
 .task-group-header { padding: 5px 14px 2px; font-size: 10px; font-weight: 600; letter-spacing: 1px; display: flex; align-items: center; gap: 6px; }
-.priority-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
-.priority-dot.priority-urgent, .task-group-header .priority-dot { background: currentColor; }
 .priority-group-urgent .task-group-header { color: var(--urgent); }
 .priority-group-high .task-group-header { color: var(--high); }
 .priority-group-normal .task-group-header { color: var(--normal); }

@@ -1,3 +1,4 @@
+import { AlertCircle, TrendingUp, Circle, Minus } from 'lucide-react'
 import { useTasksStore } from '../store/tasks'
 import { TaskItem } from './TaskItem'
 import { Priority, PRIORITY_ORDER } from '../types'
@@ -8,6 +9,14 @@ const PRIORITY_LABELS: Record<Priority, string> = {
   normal: 'NORMÁLNÍ',
   low: 'NÍZKÁ',
   unknown: 'OSTATNÍ',
+}
+
+const PRIORITY_ICONS: Record<Priority, JSX.Element> = {
+  urgent: <AlertCircle size={12} />,
+  high: <TrendingUp size={12} />,
+  normal: <Circle size={12} />,
+  low: <Minus size={12} />,
+  unknown: <Minus size={12} />,
 }
 
 const PRIORITY_ORDER_KEYS = Object.keys(PRIORITY_ORDER) as Priority[]
@@ -41,7 +50,7 @@ export function TaskList() {
         return (
           <div key={priority} className={`task-group priority-group-${priority}`}>
             <div className="task-group-header">
-              <span className={`priority-dot priority-${priority}`} />
+              {PRIORITY_ICONS[priority]}
               {PRIORITY_LABELS[priority]}
             </div>
             {items.map(issue => (
