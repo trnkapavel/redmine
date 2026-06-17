@@ -3,3 +3,6 @@ dist
 target
 .superpowers
 .DS_Store
+.env
+.env.*
+src-tauri/gen/
