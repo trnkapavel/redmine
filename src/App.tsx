@@ -19,24 +19,19 @@ export default function App() {
   }, [])
 
   useEffect(() => {
-    const unlistenTasks = listen<RedmineIssue[]>('tasks-updated', (event) => {
-      setIssues(event.payload)
-    })
-    const unlistenProjects = listen<RedmineProject[]>('projects-updated', (event) => {
-      setProjects(event.payload)
-    })
-    const unlistenSettings = listen('show-settings', () => {
-      setShowSettings(true)
+    let unlisteners: (() => void)[] = []
+
+    // listen() is async — wait for all to resolve before fetching
+    Promise.all([
+      listen<RedmineIssue[]>('tasks-updated', (event) => setIssues(event.payload)),
+      listen<RedmineProject[]>('projects-updated', (event) => setProjects(event.payload)),
+      listen('show-settings', () => setShowSettings(true)),
+    ]).then(([a, b, c]) => {
+      unlisteners = [a, b, c]
+      invoke('fetch_now').catch(() => {})
     })
 
-    // Listeners are registered — trigger initial fetch
-    invoke('fetch_now').catch(() => {})
-
-    return () => {
-      unlistenTasks.then(fn => fn())
-      unlistenProjects.then(fn => fn())
-      unlistenSettings.then(fn => fn())
-    }
+    return () => { unlisteners.forEach(fn => fn()) }
   }, [])
 
   return (
