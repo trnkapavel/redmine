@@ -41,7 +41,7 @@ fn main() {
                 .build(app)?;
 
             let app_handle = app.handle().clone();
-            tokio::spawn(async move {
+            tauri::async_runtime::spawn(async move {
                 start_polling(app_handle, config).await;
             });
 
