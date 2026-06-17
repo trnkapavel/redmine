@@ -1,13 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { invoke } from '@tauri-apps/api/core'
 import { TaskDetail } from './TaskDetail'
 import type { IssueDetail } from '../types'
 
 vi.mock('@tauri-apps/api/core', () => ({
   invoke: vi.fn(),
 }))
-
-const { invoke } = await import('@tauri-apps/api/core')
 
 const mockDetail: IssueDetail = {
   id: 42,
@@ -78,6 +77,7 @@ describe('TaskDetail', () => {
       statusId: 3,
       assignedToId: null,
     })
+    expect(vi.mocked(invoke)).toHaveBeenCalledWith('fetch_now')
   })
 
   it('shows reassign dropdown and calls update on member click', async () => {
@@ -97,5 +97,6 @@ describe('TaskDetail', () => {
       statusId: null,
       assignedToId: 6,
     })
+    expect(vi.mocked(invoke)).toHaveBeenCalledWith('fetch_now')
   })
 })

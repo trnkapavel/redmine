@@ -28,6 +28,7 @@ export function TaskDetail({ issueId, onBack, onActionDone }: Props) {
   const handleResolve = async () => {
     if (!detail || detail.closedStatuses.length === 0) return
     setWorking(true)
+    setError(null)
     try {
       await invoke('update_issue_cmd', {
         id: issueId,
@@ -38,6 +39,7 @@ export function TaskDetail({ issueId, onBack, onActionDone }: Props) {
       onActionDone()
     } catch (e) {
       setError(String(e))
+    } finally {
       setWorking(false)
     }
   }
@@ -45,6 +47,7 @@ export function TaskDetail({ issueId, onBack, onActionDone }: Props) {
   const handleReassign = async (member: Member) => {
     setWorking(true)
     setReassignOpen(false)
+    setError(null)
     try {
       await invoke('update_issue_cmd', {
         id: issueId,
@@ -55,6 +58,7 @@ export function TaskDetail({ issueId, onBack, onActionDone }: Props) {
       onActionDone()
     } catch (e) {
       setError(String(e))
+    } finally {
       setWorking(false)
     }
   }
@@ -81,19 +85,22 @@ export function TaskDetail({ issueId, onBack, onActionDone }: Props) {
               <div className="task-detail-description">{detail.description}</div>
             )}
 
-            {detail.journals.filter(j => j.notes.trim()).length > 0 && (
-              <div className="task-detail-journals">
-                <div className="task-detail-section-label">KOMENTÁŘE</div>
-                {detail.journals.filter(j => j.notes.trim()).map(j => (
-                  <div key={j.id} className="task-detail-journal">
-                    <div className="task-detail-journal-meta">
-                      {j.authorName} · {formatDate(j.createdOn)}
+            {(() => {
+              const notes = detail.journals.filter(j => j.notes.trim())
+              return notes.length > 0 ? (
+                <div className="task-detail-journals">
+                  <div className="task-detail-section-label">KOMENTÁŘE</div>
+                  {notes.map(j => (
+                    <div key={j.id} className="task-detail-journal">
+                      <div className="task-detail-journal-meta">
+                        {j.authorName} · {formatDate(j.createdOn)}
+                      </div>
+                      <div className="task-detail-journal-notes">{j.notes}</div>
                     </div>
-                    <div className="task-detail-journal-notes">{j.notes}</div>
-                  </div>
-                ))}
-              </div>
-            )}
+                  ))}
+                </div>
+              ) : null
+            })()}
           </div>
 
           <div className="task-detail-footer">
