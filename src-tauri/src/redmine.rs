@@ -13,6 +13,7 @@ pub enum Priority {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Issue {
     pub id: u32,
     pub subject: String,
