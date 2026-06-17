@@ -110,11 +110,11 @@ fn main() {
             // Nativní macOS vibrancy — frosted glass efekt
             #[cfg(target_os = "macos")]
             {
-                use tauri::window::{Effect, EffectState};
+                use tauri::window::Effect;
                 use tauri::utils::config::WindowEffectsConfig;
                 let _ = window.set_effects(WindowEffectsConfig {
                     effects: vec![Effect::HudWindow],
-                    state: Some(EffectState::Active),
+                    state: None,
                     radius: Some(10.0),
                     color: None,
                 });
