@@ -62,3 +62,36 @@ pub async fn fetch_now(state: State<'_, AppState>, app: tauri::AppHandle) -> Res
     do_fetch(&app, &url, &key).await;
     Ok(())
 }
+
+#[tauri::command]
+pub async fn get_issue_detail(state: State<'_, AppState>, id: u32) -> Result<crate::redmine::IssueDetail, String> {
+    let (url, key) = {
+        let cfg = state.config.lock().unwrap();
+        (cfg.redmine_url.clone(), cfg.api_key.clone())
+    };
+    if url.is_empty() || key.is_empty() {
+        return Err("Chybí URL nebo API klíč".to_string());
+    }
+    crate::redmine::fetch_issue_detail(&url, &key, id)
+        .await
+        .map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+pub async fn update_issue_cmd(
+    state: State<'_, AppState>,
+    id: u32,
+    status_id: Option<u32>,
+    assigned_to_id: Option<u32>,
+) -> Result<(), String> {
+    let (url, key) = {
+        let cfg = state.config.lock().unwrap();
+        (cfg.redmine_url.clone(), cfg.api_key.clone())
+    };
+    if url.is_empty() || key.is_empty() {
+        return Err("Chybí URL nebo API klíč".to_string());
+    }
+    crate::redmine::update_issue(&url, &key, id, status_id, assigned_to_id)
+        .await
+        .map_err(|e| e.to_string())
+}
