@@ -19,12 +19,14 @@ function formatDeadline(dueDate: string | null): { text: string; urgent: boolean
 
 interface Props {
   issue: RedmineIssue
+  onSelect: (id: number) => void
 }
 
-export function TaskItem({ issue }: Props) {
+export function TaskItem({ issue, onSelect }: Props) {
   const { config } = useConfigStore()
 
-  const handleClick = () => {
+  const handleOpenBrowser = (e: React.MouseEvent) => {
+    e.stopPropagation()
     const url = `${config.redmineUrl}/issues/${issue.id}`
     invoke('open_in_browser', { url })
   }
@@ -32,7 +34,7 @@ export function TaskItem({ issue }: Props) {
   const deadline = formatDeadline(issue.dueDate)
 
   return (
-    <button className={`task-item priority-${issue.priority}`} onClick={handleClick}>
+    <button className={`task-item priority-${issue.priority}`} onClick={() => onSelect(issue.id)}>
       <div className="task-item-main">
         <span className="task-subject">{issue.subject}</span>
         {issue.dueDate && (
@@ -40,7 +42,9 @@ export function TaskItem({ issue }: Props) {
             {deadline.text}
           </span>
         )}
-        <ExternalLink size={14} className="task-hover-icon" />
+        <span className="task-hover-icon" onClick={handleOpenBrowser}>
+          <ExternalLink size={14} />
+        </span>
       </div>
       <div className="task-meta">
         {issue.projectName} · #{issue.id}

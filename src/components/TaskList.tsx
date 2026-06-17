@@ -22,7 +22,11 @@ const PRIORITY_ICONS: Record<Priority, ReactElement> = {
 
 const PRIORITY_ORDER_KEYS = Object.keys(PRIORITY_ORDER) as Priority[]
 
-export function TaskList() {
+interface Props {
+  onSelectTask?: (id: number) => void
+}
+
+export function TaskList({ onSelectTask }: Props) {
   const { filteredIssues, activeProjectId } = useTasksStore()
   const sorted = filteredIssues()
 
@@ -31,6 +35,10 @@ export function TaskList() {
     if (items.length > 0) acc[priority] = items
     return acc
   }, {} as Partial<Record<Priority, typeof sorted>>)
+
+  const handleSelectTask = (id: number) => {
+    onSelectTask?.(id)
+  }
 
   return (
     <div className="task-list">
@@ -55,7 +63,7 @@ export function TaskList() {
               {PRIORITY_LABELS[priority]}
             </div>
             {items.map(issue => (
-              <TaskItem key={issue.id} issue={issue} />
+              <TaskItem key={issue.id} issue={issue} onSelect={handleSelectTask} />
             ))}
           </div>
         )

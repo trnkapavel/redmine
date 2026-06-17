@@ -47,3 +47,37 @@ export const PRIORITY_ORDER: Record<Priority, number> = {
   low: 3,
   unknown: 4,
 }
+
+export interface Journal {
+  id: number
+  notes: string
+  createdOn: string
+  authorName: string
+}
+
+export interface IssueStatus {
+  id: number
+  name: string
+}
+
+export interface Member {
+  id: number
+  name: string
+}
+
+export interface IssueDetail {
+  id: number
+  subject: string
+  description: string
+  projectId: number
+  projectName: string
+  status: string
+  statusId: number
+  priority: Priority
+  dueDate: string | null
+  assigneeId: number | null
+  assigneeName: string | null
+  journals: Journal[]
+  closedStatuses: IssueStatus[]
+  members: Member[]
+}
