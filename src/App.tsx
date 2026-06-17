@@ -1,51 +1,60 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import { invoke } from "@tauri-apps/api/core";
-import "./App.css";
+import { useEffect, useState } from 'react'
+import { listen } from '@tauri-apps/api/event'
+import { useTasksStore } from './store/tasks'
+import { useConfigStore } from './store/config'
+import { Sidebar } from './components/Sidebar'
+import { TaskList } from './components/TaskList'
+import { Settings } from './components/Settings'
+import { RedmineIssue, RedmineProject } from './types'
+import './index.css'
 
-function App() {
-  const [greetMsg, setGreetMsg] = useState("");
-  const [name, setName] = useState("");
+export default function App() {
+  const [showSettings, setShowSettings] = useState(false)
+  const [lastSync, setLastSync] = useState<string | null>(null)
+  const { setIssues, setProjects } = useTasksStore()
+  const { load, loaded } = useConfigStore()
 
-  async function greet() {
-    // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-    setGreetMsg(await invoke("greet", { name }));
-  }
+  useEffect(() => {
+    load()
+  }, [])
+
+  useEffect(() => {
+    const unlistenTasks = listen<RedmineIssue[]>('tasks-updated', (event) => {
+      setIssues(event.payload)
+      setLastSync(new Date().toLocaleTimeString('cs', { hour: '2-digit', minute: '2-digit' }))
+    })
+    const unlistenProjects = listen<RedmineProject[]>('projects-updated', (event) => {
+      setProjects(event.payload)
+    })
+    return () => {
+      unlistenTasks.then(fn => fn())
+      unlistenProjects.then(fn => fn())
+    }
+  }, [])
+
+  if (!loaded) return null
 
   return (
-    <main className="container">
-      <h1>Welcome to Tauri + React</h1>
-
-      <div className="row">
-        <a href="https://vite.dev" target="_blank">
-          <img src="/vite.svg" className="logo vite" alt="Vite logo" />
-        </a>
-        <a href="https://tauri.app" target="_blank">
-          <img src="/tauri.svg" className="logo tauri" alt="Tauri logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div>
+      <div className="titlebar">
+        <div className="titlebar-controls">
+          <span className="titlebar-dot close" />
+          <span className="titlebar-dot minimize" />
+          <span className="titlebar-dot maximize" />
+        </div>
+        <span className="titlebar-title">Redmine Focus</span>
+        <div className="titlebar-right">
+          {lastSync && <span>↻ {lastSync}</span>}
+          <button className="titlebar-settings-btn" onClick={() => setShowSettings(true)}>⚙</button>
+        </div>
       </div>
-      <p>Click on the Tauri, Vite, and React logos to learn more.</p>
 
-      <form
-        className="row"
-        onSubmit={(e) => {
-          e.preventDefault();
-          greet();
-        }}
-      >
-        <input
-          id="greet-input"
-          onChange={(e) => setName(e.currentTarget.value)}
-          placeholder="Enter a name..."
-        />
-        <button type="submit">Greet</button>
-      </form>
-      <p>{greetMsg}</p>
-    </main>
-  );
+      <div className="app-body">
+        <Sidebar />
+        <TaskList />
+      </div>
+
+      {showSettings && <Settings onClose={() => setShowSettings(false)} />}
+    </div>
+  )
 }
-
-export default App;
