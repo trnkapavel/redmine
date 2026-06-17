@@ -252,27 +252,29 @@ pub async fn fetch_issue_detail(base_url: &str, api_key: &str, id: u32) -> Resul
     let r = raw.issue;
     let project_id = r.project.id;
 
-    // 2. Issue statuses (non-fatal)
-    let closed_statuses = async {
-        let url = format!("{}/issue_statuses.json", base);
-        let resp = client.get(&url).header("X-Redmine-API-Key", api_key).send().await.ok()?;
-        let body: RawIssueStatusesResponse = resp.json().await.ok()?;
-        Some(body.issue_statuses.into_iter()
-            .filter(|s| s.is_closed.unwrap_or(false))
-            .map(|s| IssueStatus { id: s.id, name: s.name })
-            .collect::<Vec<_>>())
-    }.await.unwrap_or_default();
-
-    // 3. Project members (non-fatal)
-    let members = async {
-        let url = format!("{}/projects/{}/memberships.json?limit=100", base, project_id);
-        let resp = client.get(&url).header("X-Redmine-API-Key", api_key).send().await.ok()?;
-        let body: RawMembershipsResponse = resp.json().await.ok()?;
-        Some(body.memberships.into_iter()
-            .filter_map(|m| m.user)
-            .map(|u| Member { id: u.id, name: u.name })
-            .collect::<Vec<_>>())
-    }.await.unwrap_or_default();
+    // 2 & 3. Issue statuses and project members in parallel (non-fatal)
+    let (closed_statuses, members) = tokio::join!(
+        async {
+            let url = format!("{}/issue_statuses.json", base);
+            let resp = client.get(&url).header("X-Redmine-API-Key", api_key).send().await.ok()?;
+            let body: RawIssueStatusesResponse = resp.json().await.ok()?;
+            Some(body.issue_statuses.into_iter()
+                .filter(|s| s.is_closed.unwrap_or(false))
+                .map(|s| IssueStatus { id: s.id, name: s.name })
+                .collect::<Vec<_>>())
+        },
+        async {
+            let url = format!("{}/projects/{}/memberships.json?limit=100", base, project_id);
+            let resp = client.get(&url).header("X-Redmine-API-Key", api_key).send().await.ok()?;
+            let body: RawMembershipsResponse = resp.json().await.ok()?;
+            Some(body.memberships.into_iter()
+                .filter_map(|m| m.user)
+                .map(|u| Member { id: u.id, name: u.name })
+                .collect::<Vec<_>>())
+        }
+    );
+    let closed_statuses = closed_statuses.unwrap_or_default();
+    let members = members.unwrap_or_default();
 
     Ok(IssueDetail {
         id: r.id,
@@ -300,6 +302,9 @@ pub async fn fetch_issue_detail(base_url: &str, api_key: &str, id: u32) -> Resul
 }
 
 pub async fn update_issue(base_url: &str, api_key: &str, id: u32, status_id: Option<u32>, assigned_to_id: Option<u32>) -> Result<(), RedmineError> {
+    if status_id.is_none() && assigned_to_id.is_none() {
+        return Ok(());
+    }
     let client = Client::new();
     let url = format!("{}/issues/{}.json", base_url.trim_end_matches('/'), id);
     let body = UpdateIssueRequest {
