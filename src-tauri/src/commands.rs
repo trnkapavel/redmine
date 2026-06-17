@@ -1,4 +1,3 @@
-use std::sync::{Arc, Mutex};
 use tauri::{State, Emitter};
 use crate::store::{Config, save_config};
 use crate::AppState;

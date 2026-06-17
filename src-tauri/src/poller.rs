@@ -56,10 +56,10 @@ pub fn diff_issues(
 
 use std::sync::{Arc, Mutex};
 use tokio::time::{sleep, Duration};
-use tauri::{AppHandle, Emitter, Manager};
+use tauri::AppHandle;
 use crate::notifications::send_notification;
 use crate::store::Config;
-use crate::redmine::{fetch_issues, fetch_projects};
+use crate::redmine::fetch_issues;
 
 pub async fn start_polling(app: AppHandle, config: Arc<Mutex<Config>>) {
     let mut snapshot: Vec<Issue> = Vec::new();
@@ -81,6 +81,7 @@ pub async fn start_polling(app: AppHandle, config: Arc<Mutex<Config>>) {
         if !url.is_empty() && !key.is_empty() {
             match fetch_issues(&url, &key).await {
                 Ok(issues) => {
+                    // Diff for change notifications
                     let changes = diff_issues(&snapshot, &issues, deadline_days);
                     for change in &changes {
                         let should_notify = match &change.kind {
@@ -94,27 +95,12 @@ pub async fn start_polling(app: AppHandle, config: Arc<Mutex<Config>>) {
                         }
                     }
 
-                    let urgent_count = issues.iter()
-                        .filter(|i| i.priority == Priority::Urgent)
-                        .count();
-                    let _ = app.emit("tasks-updated", &issues);
-                    let _ = app.emit("urgent-count", urgent_count);
-
-                    // Aktualizovat tray badge
-                    if let Some(tray) = app.tray_by_id("main") {
-                        let title = if urgent_count > 0 {
-                            Some(format!(" {}", urgent_count))
-                        } else {
-                            None
-                        };
-                        let _ = tray.set_title(title.as_deref());
-                    }
-
-                    if let Ok(projects) = fetch_projects(&url, &key).await {
-                        let _ = app.emit("projects-updated", &projects);
-                    }
-
+                    // Update snapshot before do_fetch re-fetches so diff logic
+                    // is always based on the last-seen state.
                     snapshot = issues;
+
+                    // Emit events + update tray badge via shared helper
+                    crate::commands::do_fetch(&app, &url, &key).await;
                 }
                 Err(e) => {
                     eprintln!("Polling error: {}", e);
