@@ -56,7 +56,7 @@ pub fn diff_issues(
 
 use std::sync::{Arc, Mutex};
 use tokio::time::{sleep, Duration};
-use tauri::{AppHandle, Emitter};
+use tauri::{AppHandle, Emitter, Manager};
 use crate::notifications::send_notification;
 use crate::store::Config;
 use crate::redmine::{fetch_issues, fetch_projects};
@@ -99,6 +99,16 @@ pub async fn start_polling(app: AppHandle, config: Arc<Mutex<Config>>) {
                         .count();
                     let _ = app.emit("tasks-updated", &issues);
                     let _ = app.emit("urgent-count", urgent_count);
+
+                    // Aktualizovat tray badge
+                    if let Some(tray) = app.tray_by_id("main") {
+                        let title = if urgent_count > 0 {
+                            Some(format!(" {}", urgent_count))
+                        } else {
+                            None
+                        };
+                        let _ = tray.set_title(title.as_deref());
+                    }
 
                     if let Ok(projects) = fetch_projects(&url, &key).await {
                         let _ = app.emit("projects-updated", &projects);
