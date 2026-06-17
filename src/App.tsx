@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { listen } from '@tauri-apps/api/event'
+import { invoke } from '@tauri-apps/api/core'
 import { useTasksStore } from './store/tasks'
 import { useConfigStore } from './store/config'
 import { Sidebar } from './components/Sidebar'
@@ -27,6 +28,10 @@ export default function App() {
     const unlistenSettings = listen('show-settings', () => {
       setShowSettings(true)
     })
+
+    // Listeners are registered — trigger initial fetch
+    invoke('fetch_now').catch(() => {})
+
     return () => {
       unlistenTasks.then(fn => fn())
       unlistenProjects.then(fn => fn())
