@@ -44,13 +44,13 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body, #root { height: 580px; overflow: hidden; border-radius: 10px; background: transparent; }
-body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif; font-size: 13px; background: var(--bg-primary); color: var(--text-primary); overflow: hidden; user-select: none; border-radius: 10px; }
-.app-root { display: flex; flex-direction: column; height: 580px; border-radius: 10px; overflow: hidden; background: var(--bg-primary); border: 1px solid var(--border); }
+body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif; font-size: 13px; background: transparent; color: var(--text-primary); overflow: hidden; user-select: none; border-radius: 10px; }
+.app-root { display: flex; flex-direction: column; height: 580px; border-radius: 10px; overflow: hidden; background: transparent; border: 1px solid rgba(255,255,255,0.12); }
 button { background: none; border: none; cursor: pointer; color: inherit; font-family: inherit; font-size: inherit; text-align: left; }
 
 .app-body { display: flex; height: 580px; overflow: hidden; }
 
-.sidebar { width: 140px; background: var(--bg-sidebar); border-right: 1px solid var(--border); padding: 12px 0; flex-shrink: 0; overflow-y: auto; }
+.sidebar { width: 140px; background: rgba(255,255,255,0.04); border-right: 1px solid rgba(255,255,255,0.08); padding: 12px 0; flex-shrink: 0; overflow-y: auto; }
 .sidebar-section-label { padding: 0 12px; margin-bottom: 6px; color: var(--text-muted); font-size: 10px; letter-spacing: 1px; }
 .sidebar-item { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 6px 12px; color: var(--text-muted); border-left: 2px solid transparent; }
 .sidebar-item:hover { color: var(--text-primary); }
@@ -58,7 +58,7 @@ button { background: none; border: none; cursor: pointer; color: inherit; font-f
 .sidebar-item-count { font-size: 10px; background: var(--bg-toolbar); border-radius: 10px; padding: 1px 6px; }
 .sidebar-item-count.urgent { background: var(--urgent-bg); color: var(--urgent); }
 
-.task-list { flex: 1; background: var(--bg-primary); overflow-y: auto; }
+.task-list { flex: 1; background: transparent; overflow-y: auto; }
 .task-list-toolbar { padding: 8px 14px; border-bottom: 1px solid var(--border-subtle); }
 .task-count { color: var(--text-muted); font-size: 11px; }
 .task-list-empty { padding: 24px 14px; color: var(--text-muted); font-size: 12px; }
@@ -104,3 +104,8 @@ button { background: none; border: none; cursor: pointer; color: inherit; font-f
 .settings-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
 .settings-btn-cancel { padding: 6px 14px; color: var(--text-muted); border-radius: 4px; }
 .settings-btn-save { padding: 6px 14px; background: var(--accent); color: white; border-radius: 4px; font-weight: 500; }
+
+@media (prefers-color-scheme: light) {
+  .app-root { border-color: rgba(0,0,0,0.12); }
+  .sidebar { background: rgba(0,0,0,0.03); border-right-color: rgba(0,0,0,0.08); }
+}

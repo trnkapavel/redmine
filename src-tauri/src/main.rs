@@ -106,6 +106,20 @@ fn main() {
             // Focus-lost → schovat okno
             let window = app.get_webview_window("main")
                 .expect("main window must exist at setup");
+
+            // Nativní macOS vibrancy — frosted glass efekt
+            #[cfg(target_os = "macos")]
+            {
+                use tauri::window::{Effect, EffectState};
+                use tauri::utils::config::WindowEffectsConfig;
+                let _ = window.set_effects(WindowEffectsConfig {
+                    effects: vec![Effect::HudWindow],
+                    state: Some(EffectState::Active),
+                    radius: Some(10.0),
+                    color: None,
+                });
+            }
+
             let window_clone = window.clone();
             window.on_window_event(move |event| {
                 if let tauri::WindowEvent::Focused(false) = event {
