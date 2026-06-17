@@ -3,6 +3,7 @@ pub mod redmine;
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 pub mod store;
 pub mod poller;
+pub mod notifications;
 #[tauri::command]
 fn greet(name: &str) -> String {
     format!("Hello, {}! You've been greeted from Rust!", name)

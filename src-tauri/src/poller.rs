@@ -54,6 +54,68 @@ pub fn diff_issues(
     changes
 }
 
+use std::sync::{Arc, Mutex};
+use tokio::time::{sleep, Duration};
+use tauri::{AppHandle, Emitter};
+use crate::notifications::send_notification;
+use crate::store::Config;
+use crate::redmine::{fetch_issues, fetch_projects};
+
+pub async fn start_polling(app: AppHandle, config: Arc<Mutex<Config>>) {
+    let mut snapshot: Vec<Issue> = Vec::new();
+
+    loop {
+        let (url, key, interval, deadline_days, notify_new, notify_updated, notify_overdue) = {
+            let cfg = config.lock().unwrap();
+            (
+                cfg.redmine_url.clone(),
+                cfg.api_key.clone(),
+                cfg.poll_interval_minutes,
+                cfg.notify_deadline_days,
+                cfg.notify_new_issue,
+                cfg.notify_updated,
+                cfg.notify_overdue,
+            )
+        };
+
+        if !url.is_empty() && !key.is_empty() {
+            match fetch_issues(&url, &key).await {
+                Ok(issues) => {
+                    let changes = diff_issues(&snapshot, &issues, deadline_days);
+                    for change in &changes {
+                        let should_notify = match &change.kind {
+                            ChangeKind::NewIssue => notify_new,
+                            ChangeKind::Updated => notify_updated,
+                            ChangeKind::DeadlineSoon { .. } => true,
+                            ChangeKind::Overdue => notify_overdue,
+                        };
+                        if should_notify {
+                            send_notification(&app, change);
+                        }
+                    }
+
+                    let urgent_count = issues.iter()
+                        .filter(|i| i.priority == Priority::Urgent)
+                        .count();
+                    let _ = app.emit("tasks-updated", &issues);
+                    let _ = app.emit("urgent-count", urgent_count);
+
+                    if let Ok(projects) = fetch_projects(&url, &key).await {
+                        let _ = app.emit("projects-updated", &projects);
+                    }
+
+                    snapshot = issues;
+                }
+                Err(e) => {
+                    eprintln!("Polling error: {}", e);
+                }
+            }
+        }
+
+        sleep(Duration::from_secs(interval * 60)).await;
+    }
+}
+
 fn make_issue(id: u32, updated_on: &str, due_date: Option<&str>) -> Issue {
     Issue {
         id,
