@@ -23,7 +23,7 @@ const PRIORITY_ICONS: Record<Priority, ReactElement> = {
 const PRIORITY_ORDER_KEYS = Object.keys(PRIORITY_ORDER) as Priority[]
 
 export function TaskList() {
-  const { filteredIssues, activeProjectId, issues } = useTasksStore()
+  const { filteredIssues, activeProjectId } = useTasksStore()
   const sorted = filteredIssues()
 
   const grouped = PRIORITY_ORDER_KEYS.reduce((acc, priority) => {
