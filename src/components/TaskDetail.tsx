@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { invoke } from '@tauri-apps/api/core'
 import { ArrowLeft, Check, UserCheck } from 'lucide-react'
 import type { IssueDetail, Member } from '../types'
+import { useConfigStore } from '../store/config'
 
 interface Props {
   issueId: number
@@ -15,7 +16,11 @@ export function TaskDetail({ issueId, onBack, onActionDone }: Props) {
   const [error, setError] = useState<string | null>(null)
   const [reassignOpen, setReassignOpen] = useState(false)
   const [working, setWorking] = useState(false)
+  const [note, setNote] = useState('')
+  const [noteSending, setNoteSending] = useState(false)
   const reassignRef = useRef<HTMLDivElement>(null)
+
+  const { config } = useConfigStore()
 
   useEffect(() => {
     setLoading(true)
@@ -75,6 +80,28 @@ export function TaskDetail({ issueId, onBack, onActionDone }: Props) {
     }
   }
 
+  const handleWorkingOn = async () => {
+    if (!config.inProgressStatusId) return
+    setWorking(true)
+    try {
+      await invoke('update_issue_cmd', { id: issueId, statusId: config.inProgressStatusId, assignedToId: undefined })
+      onActionDone()
+    } catch { } finally { setWorking(false) }
+  }
+
+  const handleSendNote = async () => {
+    if (!note.trim()) return
+    setNoteSending(true)
+    try {
+      await invoke('add_note_cmd', { id: issueId, notes: note.trim() })
+      setNote('')
+      setDetail(null)
+      invoke<IssueDetail>('get_issue_detail', { id: issueId })
+        .then(setDetail)
+        .catch(e => setError(String(e)))
+    } catch { } finally { setNoteSending(false) }
+  }
+
   return (
     <div className="task-detail">
       <div className="task-detail-header">
@@ -113,9 +140,35 @@ export function TaskDetail({ issueId, onBack, onActionDone }: Props) {
                 </div>
               ) : null
             })()}
+
+            <div className="task-detail-note-form">
+              <textarea
+                className="task-detail-note-input"
+                placeholder="Přidat komentář…"
+                value={note}
+                onChange={e => setNote(e.target.value)}
+                rows={3}
+              />
+              <button
+                className="task-detail-btn task-detail-btn-note"
+                onClick={handleSendNote}
+                disabled={noteSending || !note.trim()}
+              >
+                {noteSending ? '…' : 'Odeslat'}
+              </button>
+            </div>
           </div>
 
           <div className="task-detail-footer">
+            {config.inProgressStatusId !== null && (
+              <button
+                className="task-detail-btn task-detail-btn-working"
+                onClick={handleWorkingOn}
+                disabled={working}
+              >
+                ▶ Pracuji
+              </button>
+            )}
             {detail.closedStatuses.length > 0 && (
               <button
                 className="task-detail-btn task-detail-btn-done"
