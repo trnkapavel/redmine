@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { RedmineIssue, RedmineProject, SortMode, PRIORITY_ORDER } from '../types'
+import { RedmineIssue, RedmineProject, SortMode, PRIORITY_ORDER, IssueStatus } from '../types'
 
 export type ActiveTab = 'mine' | 'urgent' | 'all'
 
@@ -8,6 +8,9 @@ interface TasksState {
   projects: RedmineProject[]
   activeTab: ActiveTab
   sortMode: SortMode
+  allStatuses: IssueStatus[]
+  setAllStatuses: (statuses: IssueStatus[]) => void
+  firstClosedStatusId: () => number | null
   setIssues: (issues: RedmineIssue[]) => void
   setProjects: (projects: RedmineProject[]) => void
   setActiveTab: (tab: ActiveTab) => void
@@ -26,6 +29,9 @@ export const useTasksStore = create<TasksState>((set, get) => ({
   setProjects: (projects) => set({ projects }),
   setActiveTab: (tab) => set({ activeTab: tab }),
   setSortMode: (mode) => set({ sortMode: mode }),
+  allStatuses: [],
+  setAllStatuses: (allStatuses) => set({ allStatuses }),
+  firstClosedStatusId: () => get().allStatuses.find(s => s.isClosed)?.id ?? null,
 
   filteredIssues: () => {
     const { issues, activeTab, sortMode } = get()

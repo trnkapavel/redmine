@@ -64,6 +64,7 @@ pub struct Journal {
 pub struct IssueStatus {
     pub id: u32,
     pub name: String,
+    pub is_closed: bool,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -257,7 +258,7 @@ pub async fn fetch_statuses(base_url: &str, api_key: &str) -> Result<Vec<IssueSt
     if !resp.status().is_success() { return Err(RedmineError::Api(resp.status().to_string())); }
     let raw: RawIssueStatusesResponse = resp.json().await?;
     Ok(raw.issue_statuses.into_iter()
-        .map(|s| IssueStatus { id: s.id, name: s.name })
+        .map(|s| IssueStatus { id: s.id, name: s.name, is_closed: s.is_closed.unwrap_or(false) })
         .collect())
 }
 
@@ -282,7 +283,7 @@ pub async fn fetch_issue_detail(base_url: &str, api_key: &str, id: u32) -> Resul
             let body: RawIssueStatusesResponse = resp.json().await.ok()?;
             Some(body.issue_statuses.into_iter()
                 .filter(|s| s.is_closed.unwrap_or(false))
-                .map(|s| IssueStatus { id: s.id, name: s.name })
+                .map(|s| IssueStatus { id: s.id, name: s.name, is_closed: true })
                 .collect::<Vec<_>>())
         },
         async {
