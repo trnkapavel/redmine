@@ -27,7 +27,7 @@ export interface AppConfig {
   notifyDeadlineDays: number
   notifyOverdue: boolean
   launchAtLogin: boolean
-  fontSize?: number
+  fontSize: number
 }
 
 export const DEFAULT_CONFIG: AppConfig = {
@@ -39,6 +39,7 @@ export const DEFAULT_CONFIG: AppConfig = {
   notifyDeadlineDays: 2,
   notifyOverdue: true,
   launchAtLogin: true,
+  fontSize: 14,
 }
 
 export const PRIORITY_ORDER: Record<Priority, number> = {
