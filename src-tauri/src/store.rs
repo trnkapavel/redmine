@@ -1,5 +1,7 @@
 use serde::{Deserialize, Serialize};
 
+fn default_font_size() -> u32 { 14 }
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Config {
     pub redmine_url: String,
@@ -10,6 +12,8 @@ pub struct Config {
     pub notify_deadline_days: i64,
     pub notify_overdue: bool,
     pub launch_at_login: bool,
+    #[serde(default = "default_font_size")]
+    pub font_size: u32,
 }
 
 impl Default for Config {
@@ -23,6 +27,7 @@ impl Default for Config {
             notify_deadline_days: 2,
             notify_overdue: true,
             launch_at_login: true,
+            font_size: default_font_size(),
         }
     }
 }
@@ -52,6 +57,10 @@ pub fn load_config(store: &tauri_plugin_store::Store<tauri::Wry>) -> Config {
     let launch_at_login = store.get("launch_at_login")
         .and_then(|v| v.as_bool())
         .unwrap_or(true);
+    let font_size = store.get("fontSize")
+        .and_then(|v| v.as_u64())
+        .map(|v| v as u32)
+        .unwrap_or_else(default_font_size);
 
     Config {
         redmine_url: url,
@@ -62,6 +71,7 @@ pub fn load_config(store: &tauri_plugin_store::Store<tauri::Wry>) -> Config {
         notify_deadline_days: deadline_days,
         notify_overdue,
         launch_at_login,
+        font_size,
     }
 }
 
@@ -74,6 +84,7 @@ pub fn save_config(store: &tauri_plugin_store::Store<tauri::Wry>, config: &Confi
     store.set("notify_deadline_days", config.notify_deadline_days);
     store.set("notify_overdue", config.notify_overdue);
     store.set("launch_at_login", config.launch_at_login);
+    store.set("fontSize", config.font_size);
     let _ = store.save();
 }
 
