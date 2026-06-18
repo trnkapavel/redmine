@@ -114,12 +114,14 @@ button { background: none; border: none; cursor: pointer; color: inherit; font-f
 .settings-toggle.on { background: color-mix(in srgb, #48bb78 15%, transparent); color: #48bb78; }
 .settings-toggle.off { background: var(--bg-toolbar); color: var(--text-muted); }
 .settings-number-input { width: 50px; background: var(--bg-toolbar); border: 1px solid var(--border); border-radius: 4px; padding: 3px 8px; color: var(--text-primary); font-size: 12px; text-align: center; }
+.settings-select { background: var(--bg-toolbar); border: 1px solid var(--border); border-radius: 4px; padding: 3px 8px; color: var(--text-primary); font-size: 12px; }
 .settings-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
 .settings-btn-cancel { padding: 6px 14px; color: var(--text-muted); border-radius: 4px; }
 .settings-btn-save { padding: 6px 14px; background: var(--accent); color: white; border-radius: 4px; font-weight: 500; }
+.about-link { font-size: 12px; color: var(--accent); padding: 4px 0; }
 
 /* Task Detail Panel */
-.task-detail-slide { position: absolute; inset: 0; background: var(--bg-primary); display: flex; flex-direction: column; animation: slideInRight 180ms ease forwards; }
+.task-detail-slide { position: absolute; inset: 0; background: transparent; display: flex; flex-direction: column; animation: slideInRight 180ms ease forwards; }
 @keyframes slideInRight { from { transform: translateX(100%); } to { transform: translateX(0); } }
 
 .task-detail { display: flex; flex-direction: column; height: 100%; }
@@ -133,14 +135,14 @@ button { background: none; border: none; cursor: pointer; color: inherit; font-f
 .task-detail-error { color: var(--urgent); }
 
 .task-detail-body { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 12px; }
-.task-detail-subject { font-size: 13px; font-weight: 600; color: var(--text-primary); line-height: 1.4; }
-.task-detail-description { font-size: 12px; color: var(--text-secondary); line-height: 1.5; white-space: pre-wrap; }
+.task-detail-subject { font-size: var(--task-font-size); font-weight: 600; color: var(--text-primary); line-height: 1.4; overflow-wrap: break-word; word-break: break-word; }
+.task-detail-description { font-size: var(--task-font-size); color: var(--text-secondary); line-height: 1.5; white-space: pre-wrap; }
 
 .task-detail-journals { display: flex; flex-direction: column; gap: 8px; }
 .task-detail-section-label { font-size: 10px; font-weight: 600; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 4px; }
 .task-detail-journal { background: var(--bg-toolbar); border-radius: 6px; padding: 8px 10px; }
 .task-detail-journal-meta { font-size: 10px; color: var(--text-muted); margin-bottom: 4px; }
-.task-detail-journal-notes { font-size: 12px; color: var(--text-secondary); white-space: pre-wrap; }
+.task-detail-journal-notes { font-size: var(--task-font-size); color: var(--text-secondary); white-space: pre-wrap; }
 
 .task-detail-footer { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-top: 1px solid var(--border-subtle); flex-shrink: 0; }
 .task-detail-btn { display: flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 500; }

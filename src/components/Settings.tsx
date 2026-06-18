@@ -1,6 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { getVersion } from '@tauri-apps/api/app'
+import { invoke } from '@tauri-apps/api/core'
 import { useConfigStore } from '../store/config'
-import { AppConfig } from '../types'
+import { AppConfig, IssueStatus } from '../types'
 
 interface Props {
   onClose: () => void
@@ -9,6 +11,25 @@ interface Props {
 export function Settings({ onClose }: Props) {
   const { config, save } = useConfigStore()
   const [form, setForm] = useState<AppConfig>(config)
+  const [version, setVersion] = useState('')
+  const [allStatuses, setAllStatuses] = useState<IssueStatus[]>([])
+
+  useEffect(() => { getVersion().then(setVersion) }, [])
+
+  useEffect(() => {
+    invoke<IssueStatus[]>('fetch_statuses_cmd')
+      .then(statuses => {
+        setAllStatuses(statuses)
+        if (form.inProgressStatusId === null) {
+          const keywords = ['progress', 'řeší', 'řešen', 'přijat', 'probíhá', 'in progress', 'assigned']
+          const auto = statuses.find(s =>
+            keywords.some(kw => s.name.toLowerCase().includes(kw))
+          )
+          if (auto) setForm(f => ({ ...f, inProgressStatusId: auto.id }))
+        }
+      })
+      .catch(() => {})
+  }, [])
 
   const handleSave = async () => {
     await save(form)
@@ -104,6 +125,42 @@ export function Settings({ onClose }: Props) {
               onClick={() => toggle('launchAtLogin')}
             >
               {form.launchAtLogin ? 'ON' : 'OFF'}
+            </button>
+          </div>
+        </section>
+
+        <section className="settings-section">
+          <div className="settings-section-label">WORKFLOW</div>
+          <div className="settings-row">
+            <span>Status při práci</span>
+            <select
+              className="settings-select"
+              value={form.inProgressStatusId ?? ''}
+              onChange={e => setForm(f => ({
+                ...f,
+                inProgressStatusId: e.target.value ? Number(e.target.value) : null
+              }))}
+            >
+              <option value="">— nevybráno —</option>
+              {allStatuses.map(s => (
+                <option key={s.id} value={s.id}>{s.name}</option>
+              ))}
+            </select>
+          </div>
+        </section>
+
+        <section className="settings-section">
+          <div className="settings-section-label">O APLIKACI</div>
+          <div className="settings-row">
+            <div>
+              <div style={{ fontWeight: 600 }}>Redmine Focus</div>
+              <div style={{ color: 'var(--text-muted)', fontSize: 11, marginTop: 2 }}>verze {version} · Pavel Trnka · 2026</div>
+            </div>
+            <button
+              className="about-link"
+              onClick={() => invoke('open_in_browser', { url: 'https://github.com/trnkapavel/redmine' })}
+            >
+              GitHub ↗
             </button>
           </div>
         </section>
