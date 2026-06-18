@@ -20,9 +20,12 @@ function formatDeadline(dueDate: string | null): { text: string; urgent: boolean
 interface Props {
   issue: RedmineIssue
   onSelect: (id: number) => void
+  onQuickResolve?: (id: number, e: React.MouseEvent) => void
+  onQuickWorking?: (id: number, e: React.MouseEvent) => void
+  showWorkingBtn?: boolean
 }
 
-export function TaskItem({ issue, onSelect }: Props) {
+export function TaskItem({ issue, onSelect, onQuickResolve, onQuickWorking, showWorkingBtn }: Props) {
   const { config } = useConfigStore()
 
   const handleOpenBrowser = (e: React.MouseEvent) => {
@@ -45,6 +48,22 @@ export function TaskItem({ issue, onSelect }: Props) {
         <span className="task-hover-icon" onClick={handleOpenBrowser}>
           <ExternalLink size={14} />
         </span>
+        <div className="task-quick-actions">
+          {showWorkingBtn && onQuickWorking && (
+            <button
+              className="task-hover-icon task-quick-btn"
+              onClick={(e) => onQuickWorking(issue.id, e)}
+              title="Pracuji na tom"
+            >▶</button>
+          )}
+          {onQuickResolve && (
+            <button
+              className="task-hover-icon task-quick-btn task-quick-btn-done"
+              onClick={(e) => onQuickResolve(issue.id, e)}
+              title="Vyřeším"
+            >✓</button>
+          )}
+        </div>
       </div>
       <div className="task-meta">
         {issue.projectName} · #{issue.id}
