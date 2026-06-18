@@ -15,6 +15,8 @@ pub struct Config {
     pub launch_at_login: bool,
     #[serde(default = "default_font_size")]
     pub font_size: u32,
+    #[serde(default)]
+    pub in_progress_status_id: Option<u32>,
 }
 
 impl Default for Config {
@@ -29,6 +31,7 @@ impl Default for Config {
             notify_overdue: true,
             launch_at_login: true,
             font_size: default_font_size(),
+            in_progress_status_id: None,
         }
     }
 }
@@ -62,6 +65,9 @@ pub fn load_config(store: &tauri_plugin_store::Store<tauri::Wry>) -> Config {
         .and_then(|v| v.as_u64())
         .map(|v| v as u32)
         .unwrap_or_else(default_font_size);
+    let in_progress_status_id = store.get("inProgressStatusId")
+        .and_then(|v| v.as_u64())
+        .map(|v| v as u32);
 
     Config {
         redmine_url: url,
@@ -73,6 +79,7 @@ pub fn load_config(store: &tauri_plugin_store::Store<tauri::Wry>) -> Config {
         notify_overdue,
         launch_at_login,
         font_size,
+        in_progress_status_id,
     }
 }
 
@@ -86,6 +93,10 @@ pub fn save_config(store: &tauri_plugin_store::Store<tauri::Wry>, config: &Confi
     store.set("notify_overdue", config.notify_overdue);
     store.set("launch_at_login", config.launch_at_login);
     store.set("fontSize", config.font_size);
+    match config.in_progress_status_id {
+        Some(id) => store.set("inProgressStatusId", id),
+        None => { let _ = store.delete("inProgressStatusId"); }
+    }
     let _ = store.save();
 }
 
