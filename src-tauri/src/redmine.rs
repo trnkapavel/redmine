@@ -178,6 +178,16 @@ struct UpdateIssueBody {
     assigned_to_id: Option<u32>,
 }
 
+#[derive(Serialize)]
+struct AddNoteRequest {
+    issue: AddNoteBody,
+}
+
+#[derive(Serialize)]
+struct AddNoteBody {
+    notes: String,
+}
+
 fn parse_priority(name: &str) -> Priority {
     match name.to_lowercase().as_str() {
         "urgent" | "urgentní" => Priority::Urgent,
@@ -237,6 +247,18 @@ pub async fn fetch_projects(base_url: &str, api_key: &str) -> Result<Vec<Project
 
     let raw: RawProjectsResponse = response.json().await?;
     Ok(raw.projects.into_iter().map(|p| Project { id: p.id, name: p.name }).collect())
+}
+
+pub async fn fetch_statuses(base_url: &str, api_key: &str) -> Result<Vec<IssueStatus>, RedmineError> {
+    let client = Client::new();
+    let url = format!("{}/issue_statuses.json", base_url.trim_end_matches('/'));
+    let resp = client.get(&url).header("X-Redmine-API-Key", api_key).send().await?;
+    if resp.status() == 401 { return Err(RedmineError::Unauthorized); }
+    if !resp.status().is_success() { return Err(RedmineError::Api(resp.status().to_string())); }
+    let raw: RawIssueStatusesResponse = resp.json().await?;
+    Ok(raw.issue_statuses.into_iter()
+        .map(|s| IssueStatus { id: s.id, name: s.name })
+        .collect())
 }
 
 pub async fn fetch_issue_detail(base_url: &str, api_key: &str, id: u32) -> Result<IssueDetail, RedmineError> {
@@ -310,6 +332,20 @@ pub async fn update_issue(base_url: &str, api_key: &str, id: u32, status_id: Opt
     let body = UpdateIssueRequest {
         issue: UpdateIssueBody { status_id, assigned_to_id },
     };
+    let resp = client.put(&url)
+        .header("X-Redmine-API-Key", api_key)
+        .header("Content-Type", "application/json")
+        .json(&body)
+        .send().await?;
+    if resp.status() == 401 { return Err(RedmineError::Unauthorized); }
+    if !resp.status().is_success() { return Err(RedmineError::Api(resp.status().to_string())); }
+    Ok(())
+}
+
+pub async fn add_note(base_url: &str, api_key: &str, id: u32, notes: String) -> Result<(), RedmineError> {
+    let client = Client::new();
+    let url = format!("{}/issues/{}.json", base_url.trim_end_matches('/'), id);
+    let body = AddNoteRequest { issue: AddNoteBody { notes } };
     let resp = client.put(&url)
         .header("X-Redmine-API-Key", api_key)
         .header("Content-Type", "application/json")
@@ -433,5 +469,38 @@ mod tests {
 
         let result = update_issue(&server.url(), "test-key", 42, Some(3), None).await;
         assert!(result.is_ok());
+    }
+
+    #[tokio::test]
+    async fn test_fetch_statuses_returns_all() {
+        let mut server = Server::new_async().await;
+        server.mock("GET", "/issue_statuses.json")
+            .with_status(200)
+            .with_header("content-type", "application/json")
+            .with_body(r#"{"issue_statuses": [
+                {"id": 1, "name": "New", "is_closed": false},
+                {"id": 2, "name": "In Progress", "is_closed": false},
+                {"id": 3, "name": "Resolved", "is_closed": true}
+            ]}"#)
+            .create_async().await;
+
+        let statuses = fetch_statuses(&server.url(), "test-key").await.unwrap();
+
+        assert_eq!(statuses.len(), 3);
+        assert_eq!(statuses[0].name, "New");
+        assert_eq!(statuses[2].name, "Resolved");
+    }
+
+    #[tokio::test]
+    async fn test_add_note_sends_put() {
+        let mut server = Server::new_async().await;
+        let mock = server.mock("PUT", "/issues/42.json")
+            .with_status(200)
+            .create_async().await;
+
+        let result = add_note(&server.url(), "test-key", 42, "Testovací poznámka".to_string()).await;
+
+        assert!(result.is_ok());
+        mock.assert_async().await;
     }
 }
