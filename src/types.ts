@@ -27,6 +27,7 @@ export interface AppConfig {
   notifyDeadlineDays: number
   notifyOverdue: boolean
   launchAtLogin: boolean
+  fontSize?: number
 }
 
 export const DEFAULT_CONFIG: AppConfig = {
