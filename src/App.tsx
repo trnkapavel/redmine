@@ -7,16 +7,24 @@ import { Tabs } from './components/Tabs'
 import { TaskList } from './components/TaskList'
 import { TaskDetail } from './components/TaskDetail'
 import { Settings } from './components/Settings'
-import { RedmineIssue, RedmineProject } from './types'
+import { RedmineIssue, RedmineProject, IssueStatus } from './types'
 import './index.css'
 
 export default function App() {
   const [showSettings, setShowSettings] = useState(false)
   const [selectedIssueId, setSelectedIssueId] = useState<number | null>(null)
-  const { setIssues, setProjects } = useTasksStore()
+  const { setIssues, setProjects, setAllStatuses } = useTasksStore()
   const { load, config, save } = useConfigStore()
 
   useEffect(() => { load() }, [])
+
+  useEffect(() => {
+    if (config.redmineUrl && config.apiKey) {
+      invoke<IssueStatus[]>('fetch_statuses_cmd')
+        .then(setAllStatuses)
+        .catch(() => {})
+    }
+  }, [config.redmineUrl, config.apiKey])
 
   useEffect(() => {
     const fontSize = config.fontSize ?? 14
@@ -47,7 +55,7 @@ export default function App() {
       <Tabs onShowSettings={() => setShowSettings(true)} />
 
       <div className="task-list-wrapper">
-        <TaskList onSelectTask={setSelectedIssueId} />
+        {selectedIssueId === null && <TaskList onSelectTask={setSelectedIssueId} />}
         {selectedIssueId !== null && (
           <div className="task-detail-slide">
             <TaskDetail
