@@ -22,6 +22,10 @@ fn main() {
             let config = Arc::new(Mutex::new(config));
             app.manage(AppState { config: config.clone() });
 
+            let tray_icon = tauri::image::Image::from_bytes(
+                include_bytes!("../icons/tray-icon.png")
+            ).expect("tray icon must load");
+
             // Pravý klik menu
             let refresh_item = MenuItem::with_id(app, "refresh", "Obnovit tasky", true, None::<&str>)?;
             let settings_item = MenuItem::with_id(app, "settings", "Nastavení…", true, None::<&str>)?;
@@ -30,7 +34,8 @@ fn main() {
             let menu = Menu::with_items(app, &[&refresh_item, &settings_item, &separator, &quit_item])?;
 
             TrayIconBuilder::with_id("main")
-                .icon(app.default_window_icon().expect("tray icon must be configured").clone())
+                .icon(tray_icon)
+                .icon_as_template(true)
                 .tooltip("Redmine Focus")
                 .menu(&menu)
                 .show_menu_on_left_click(false)
