@@ -96,7 +96,7 @@ export function TaskDetail({ issueId, onBack, onActionDone }: Props) {
       await invoke('add_note_cmd', { id: issueId, notes: note.trim() })
       setNote('')
       setDetail(null)
-      invoke<IssueDetail>('get_issue_detail', { id: issueId })
+      await invoke<IssueDetail>('get_issue_detail', { id: issueId })
         .then(setDetail)
         .catch(e => setError(String(e)))
     } catch { } finally { setNoteSending(false) }

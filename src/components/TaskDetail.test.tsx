@@ -23,7 +23,7 @@ const mockDetail: IssueDetail = {
   journals: [
     { id: 1, notes: 'Looking into it', createdOn: '2026-06-18T10:00:00Z', authorName: 'Pavel' },
   ],
-  closedStatuses: [{ id: 3, name: 'Resolved' }],
+  closedStatuses: [{ id: 3, name: 'Resolved', isClosed: true }],
   members: [
     { id: 5, name: 'Pavel' },
     { id: 6, name: 'Jana' },

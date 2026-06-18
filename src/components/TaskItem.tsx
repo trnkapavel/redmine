@@ -22,10 +22,9 @@ interface Props {
   onSelect: (id: number) => void
   onQuickResolve?: (id: number, e: React.MouseEvent) => void
   onQuickWorking?: (id: number, e: React.MouseEvent) => void
-  showWorkingBtn?: boolean
 }
 
-export function TaskItem({ issue, onSelect, onQuickResolve, onQuickWorking, showWorkingBtn }: Props) {
+export function TaskItem({ issue, onSelect, onQuickResolve, onQuickWorking }: Props) {
   const { config } = useConfigStore()
 
   const handleOpenBrowser = (e: React.MouseEvent) => {
@@ -49,7 +48,7 @@ export function TaskItem({ issue, onSelect, onQuickResolve, onQuickWorking, show
           <ExternalLink size={14} />
         </span>
         <div className="task-quick-actions">
-          {showWorkingBtn && onQuickWorking && (
+          {onQuickWorking && (
             <button
               className="task-hover-icon task-quick-btn"
               onClick={(e) => onQuickWorking(issue.id, e)}

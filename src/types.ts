@@ -62,7 +62,7 @@ export interface Journal {
 export interface IssueStatus {
   id: number
   name: string
-  isClosed?: boolean
+  isClosed: boolean
 }
 
 export interface Member {

@@ -55,7 +55,7 @@ export default function App() {
       <Tabs onShowSettings={() => setShowSettings(true)} />
 
       <div className="task-list-wrapper">
-        {selectedIssueId === null && <TaskList onSelectTask={setSelectedIssueId} />}
+        {selectedIssueId === null && <TaskList onSelectTask={setSelectedIssueId} onShowSettings={() => setShowSettings(true)} />}
         {selectedIssueId !== null && (
           <div className="task-detail-slide">
             <TaskDetail

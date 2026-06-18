@@ -26,9 +26,10 @@ const PRIORITY_ORDER_KEYS = Object.keys(PRIORITY_ORDER) as Priority[]
 
 interface Props {
   onSelectTask?: (id: number) => void
+  onShowSettings?: () => void
 }
 
-export function TaskList({ onSelectTask }: Props) {
+export function TaskList({ onSelectTask, onShowSettings }: Props) {
   const { filteredIssues, firstClosedStatusId } = useTasksStore()
   const { config } = useConfigStore()
   const sorted = filteredIssues()
@@ -43,7 +44,10 @@ export function TaskList({ onSelectTask }: Props) {
 
   const handleQuickWorking = async (issueId: number, e: React.MouseEvent) => {
     e.stopPropagation()
-    if (!config.inProgressStatusId) return
+    if (!config.inProgressStatusId) {
+      onShowSettings?.()
+      return
+    }
     await invoke('update_issue_cmd', { id: issueId, statusId: config.inProgressStatusId, assignedToId: undefined })
     invoke('fetch_now').catch(() => {})
   }
@@ -76,7 +80,6 @@ export function TaskList({ onSelectTask }: Props) {
                 onSelect={id => onSelectTask?.(id)}
                 onQuickResolve={handleQuickResolve}
                 onQuickWorking={handleQuickWorking}
-                showWorkingBtn={config.inProgressStatusId !== null}
               />
             ))}
           </div>
