@@ -32,7 +32,7 @@ macOS tray aplikace, která zobrazuje vaše Redmine úkoly přímo v menu baru. 
 
 ## Screenshot
 
-> Aplikace zobrazuje úkoly v kompaktním okně přímo pod tray ikonou.
+![Redmine Focus](docs/screenshot.png)
 
 ---
 
