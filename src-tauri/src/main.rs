@@ -145,7 +145,9 @@ fn main() {
             redmine_focus_lib::commands::open_in_browser,
             redmine_focus_lib::commands::fetch_now,
             redmine_focus_lib::commands::get_issue_detail,
-            redmine_focus_lib::commands::update_issue_cmd
+            redmine_focus_lib::commands::update_issue_cmd,
+            redmine_focus_lib::commands::fetch_statuses_cmd,
+            redmine_focus_lib::commands::add_note_cmd
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -1,7 +1,7 @@
 use tauri::{State, Emitter};
 use crate::store::{Config, save_config};
 use crate::AppState;
-use crate::redmine::{fetch_issues, fetch_projects, fetch_issue_detail, update_issue, IssueDetail, Priority};
+use crate::redmine::{fetch_issues, fetch_projects, fetch_issue_detail, update_issue, add_note, fetch_statuses, IssueDetail, IssueStatus, Priority};
 
 fn require_config(state: &State<'_, AppState>) -> Result<(String, String), String> {
     let cfg = state.config.lock().unwrap();
@@ -82,4 +82,16 @@ pub async fn update_issue_cmd(
 ) -> Result<(), String> {
     let (url, key) = require_config(&state)?;
     update_issue(&url, &key, id, status_id, assigned_to_id).await.map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+pub async fn fetch_statuses_cmd(state: State<'_, AppState>) -> Result<Vec<IssueStatus>, String> {
+    let (url, key) = require_config(&state)?;
+    fetch_statuses(&url, &key).await.map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+pub async fn add_note_cmd(state: State<'_, AppState>, id: u32, notes: String) -> Result<(), String> {
+    let (url, key) = require_config(&state)?;
+    add_note(&url, &key, id, notes).await.map_err(|e| e.to_string())
 }
