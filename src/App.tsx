@@ -3,7 +3,6 @@ import { listen } from '@tauri-apps/api/event'
 import { invoke } from '@tauri-apps/api/core'
 import { useTasksStore } from './store/tasks'
 import { useConfigStore } from './store/config'
-import { Sidebar } from './components/Sidebar'
 import { TaskList } from './components/TaskList'
 import { TaskDetail } from './components/TaskDetail'
 import { Settings } from './components/Settings'
@@ -38,7 +37,6 @@ export default function App() {
   return (
     <div className="app-root">
       <div className="app-body">
-        <Sidebar />
         <div className="task-list-wrapper">
           <TaskList onSelectTask={setSelectedIssueId} />
           {selectedIssueId !== null && (
