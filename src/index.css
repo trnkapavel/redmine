@@ -115,7 +115,7 @@ button { background: none; border: none; cursor: pointer; color: inherit; font-f
 .settings-btn-save { padding: 6px 14px; background: var(--accent); color: white; border-radius: 4px; font-weight: 500; }
 
 /* Task Detail Panel */
-.task-detail-slide { position: absolute; inset: 0; background: rgba(17,17,17,0.92); backdrop-filter: blur(4px); display: flex; flex-direction: column; animation: slideInRight 180ms ease forwards; }
+.task-detail-slide { position: absolute; inset: 0; background: var(--bg-primary); display: flex; flex-direction: column; animation: slideInRight 180ms ease forwards; }
 @keyframes slideInRight { from { transform: translateX(100%); } to { transform: translateX(0); } }
 
 .task-detail { display: flex; flex-direction: column; height: 100%; }
@@ -134,7 +134,7 @@ button { background: none; border: none; cursor: pointer; color: inherit; font-f
 
 .task-detail-journals { display: flex; flex-direction: column; gap: 8px; }
 .task-detail-section-label { font-size: 10px; font-weight: 600; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 4px; }
-.task-detail-journal { background: rgba(255,255,255,0.04); border-radius: 6px; padding: 8px 10px; }
+.task-detail-journal { background: var(--bg-toolbar); border-radius: 6px; padding: 8px 10px; }
 .task-detail-journal-meta { font-size: 10px; color: var(--text-muted); margin-bottom: 4px; }
 .task-detail-journal-notes { font-size: 12px; color: var(--text-secondary); white-space: pre-wrap; }
 
@@ -143,9 +143,9 @@ button { background: none; border: none; cursor: pointer; color: inherit; font-f
 .task-detail-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 .task-detail-btn-done { background: rgba(72,187,120,0.15); color: #48bb78; }
 .task-detail-btn-done:hover:not(:disabled) { background: rgba(72,187,120,0.25); }
-.task-detail-btn-reassign { background: rgba(255,255,255,0.08); color: var(--text-secondary); }
-.task-detail-btn-reassign:hover:not(:disabled) { background: rgba(255,255,255,0.12); }
+.task-detail-btn-reassign { background: var(--bg-toolbar); color: var(--text-secondary); }
+.task-detail-btn-reassign:hover:not(:disabled) { background: var(--border); }
 .task-detail-reassign-wrapper { position: relative; }
 .task-detail-dropdown { position: absolute; bottom: calc(100% + 4px); left: 0; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 6px; min-width: 160px; overflow: hidden; z-index: 10; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
 .task-detail-dropdown-item { width: 100%; padding: 7px 12px; font-size: 12px; color: var(--text-primary); text-align: left; }
-.task-detail-dropdown-item:hover { background: rgba(255,255,255,0.08); }
+.task-detail-dropdown-item:hover { background: var(--bg-toolbar); }
