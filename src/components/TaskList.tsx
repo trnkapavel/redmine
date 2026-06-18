@@ -38,7 +38,9 @@ export function TaskList({ onSelectTask, onShowSettings }: Props) {
     e.stopPropagation()
     const statusId = firstClosedStatusId()
     if (!statusId) return
-    await invoke('update_issue_cmd', { id: issueId, statusId, assignedToId: undefined })
+    try {
+      await invoke('update_issue_cmd', { id: issueId, statusId, assignedToId: null })
+    } catch {}
     invoke('fetch_now').catch(() => {})
   }
 
@@ -48,7 +50,9 @@ export function TaskList({ onSelectTask, onShowSettings }: Props) {
       onShowSettings?.()
       return
     }
-    await invoke('update_issue_cmd', { id: issueId, statusId: config.inProgressStatusId, assignedToId: undefined })
+    try {
+      await invoke('update_issue_cmd', { id: issueId, statusId: config.inProgressStatusId, assignedToId: null })
+    } catch {}
     invoke('fetch_now').catch(() => {})
   }
 

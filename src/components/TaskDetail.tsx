@@ -84,7 +84,7 @@ export function TaskDetail({ issueId, onBack, onActionDone }: Props) {
     if (!config.inProgressStatusId) return
     setWorking(true)
     try {
-      await invoke('update_issue_cmd', { id: issueId, statusId: config.inProgressStatusId, assignedToId: undefined })
+      await invoke('update_issue_cmd', { id: issueId, statusId: config.inProgressStatusId, assignedToId: null })
       onActionDone()
     } catch { } finally { setWorking(false) }
   }
