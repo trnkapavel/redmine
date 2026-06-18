@@ -1,0 +1,15 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1024" height="1024" rx="224" fill="#4F46E5"/>
+  <circle cx="512" cy="512" r="288" fill="white"/>
+  <clipPath id="circ">
+    <circle cx="512" cy="512" r="272"/>
+  </clipPath>
+  <g clip-path="url(#circ)">
+    <line x1="128" y1="640" x2="544" y2="224" stroke="#4F46E5" stroke-width="88" stroke-linecap="round"/>
+    <line x1="240" y1="768" x2="656" y2="352" stroke="#4F46E5" stroke-width="88" stroke-linecap="round"/>
+    <line x1="368" y1="832" x2="784" y2="416" stroke="#4F46E5" stroke-width="88" stroke-linecap="round"/>
+  </g>
+  <circle cx="704" cy="704" r="160" fill="#4F46E5"/>
+  <polyline points="624,704 672,768 784,640" stroke="white" stroke-width="48" fill="none"
+    stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
