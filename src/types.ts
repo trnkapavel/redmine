@@ -28,6 +28,7 @@ export interface AppConfig {
   notifyOverdue: boolean
   launchAtLogin: boolean
   fontSize: number
+  inProgressStatusId: number | null
 }
 
 export const DEFAULT_CONFIG: AppConfig = {
@@ -40,6 +41,7 @@ export const DEFAULT_CONFIG: AppConfig = {
   notifyOverdue: true,
   launchAtLogin: true,
   fontSize: 14,
+  inProgressStatusId: null,
 }
 
 export const PRIORITY_ORDER: Record<Priority, number> = {
@@ -60,6 +62,7 @@ export interface Journal {
 export interface IssueStatus {
   id: number
   name: string
+  isClosed?: boolean
 }
 
 export interface Member {
