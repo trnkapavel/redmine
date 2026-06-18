@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 fn default_font_size() -> u32 { 14 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Config {
     pub redmine_url: String,
     pub api_key: String,

@@ -14,12 +14,22 @@ export const useConfigStore = create<ConfigState>((set) => ({
   loaded: false,
 
   load: async () => {
-    const raw = await invoke<AppConfig>('get_config')
-    set({ config: raw, loaded: true })
+    try {
+      const raw = await invoke<AppConfig>('get_config')
+      set({ config: raw, loaded: true })
+    } catch (e) {
+      console.error('get_config failed:', e)
+      set({ loaded: true })
+    }
   },
 
   save: async (config) => {
     await invoke('save_config_cmd', { config })
     set({ config })
+    try {
+      await invoke('fetch_now')
+    } catch (e) {
+      console.error('fetch_now failed:', e)
+    }
   },
 }))
