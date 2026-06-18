@@ -92,6 +92,8 @@ button { background: none; border: none; cursor: pointer; color: inherit; font-f
 .task-quick-btn { padding: 2px 6px; border-radius: 4px; font-size: 12px; line-height: 1; background: rgba(255,255,255,0.08); }
 .task-quick-btn:hover { background: rgba(255,255,255,0.16); color: var(--text-primary); }
 .task-quick-btn-done:hover { background: rgba(72,187,120,0.2); color: #48bb78; }
+.task-quick-btn-busy { opacity: 1 !important; background: rgba(255,255,255,0.12) !important; color: var(--text-muted) !important; cursor: wait !important; }
+.task-item-busy { opacity: 0.6; pointer-events: none; }
 
 /* Footer */
 .app-footer { display: flex; align-items: center; justify-content: flex-end; padding: 6px 12px; border-top: 1px solid var(--border-subtle); background: transparent; flex-shrink: 0; }

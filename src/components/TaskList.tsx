@@ -1,6 +1,7 @@
 import { invoke } from '@tauri-apps/api/core'
 import { AlertCircle, ArrowUp, Circle, Minus } from 'lucide-react'
 import type { ReactElement } from 'react'
+import { useState } from 'react'
 import { useConfigStore } from '../store/config'
 import { useTasksStore } from '../store/tasks'
 import { TaskItem } from './TaskItem'
@@ -33,15 +34,18 @@ export function TaskList({ onSelectTask, onShowSettings }: Props) {
   const { filteredIssues, firstClosedStatusId } = useTasksStore()
   const { config } = useConfigStore()
   const sorted = filteredIssues()
+  const [busyId, setBusyId] = useState<number | null>(null)
 
   const handleQuickResolve = async (issueId: number, e: React.MouseEvent) => {
     e.stopPropagation()
     const statusId = firstClosedStatusId()
-    if (!statusId) return
+    if (!statusId || busyId !== null) return
+    setBusyId(issueId)
     try {
       await invoke('update_issue_cmd', { id: issueId, statusId, assignedToId: null })
     } catch {}
     invoke('fetch_now').catch(() => {})
+    setBusyId(null)
   }
 
   const handleQuickWorking = async (issueId: number, e: React.MouseEvent) => {
@@ -50,10 +54,13 @@ export function TaskList({ onSelectTask, onShowSettings }: Props) {
       onShowSettings?.()
       return
     }
+    if (busyId !== null) return
+    setBusyId(issueId)
     try {
       await invoke('update_issue_cmd', { id: issueId, statusId: config.inProgressStatusId, assignedToId: null })
     } catch {}
     invoke('fetch_now').catch(() => {})
+    setBusyId(null)
   }
 
   const grouped = PRIORITY_ORDER_KEYS.reduce((acc, priority) => {
@@ -84,6 +91,7 @@ export function TaskList({ onSelectTask, onShowSettings }: Props) {
                 onSelect={id => onSelectTask?.(id)}
                 onQuickResolve={handleQuickResolve}
                 onQuickWorking={handleQuickWorking}
+                busy={busyId === issue.id}
               />
             ))}
           </div>

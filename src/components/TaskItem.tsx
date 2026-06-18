@@ -22,9 +22,10 @@ interface Props {
   onSelect: (id: number) => void
   onQuickResolve?: (id: number, e: React.MouseEvent) => void
   onQuickWorking?: (id: number, e: React.MouseEvent) => void
+  busy?: boolean
 }
 
-export function TaskItem({ issue, onSelect, onQuickResolve, onQuickWorking }: Props) {
+export function TaskItem({ issue, onSelect, onQuickResolve, onQuickWorking, busy }: Props) {
   const { config } = useConfigStore()
 
   const handleOpenBrowser = (e: React.MouseEvent) => {
@@ -36,7 +37,7 @@ export function TaskItem({ issue, onSelect, onQuickResolve, onQuickWorking }: Pr
   const deadline = formatDeadline(issue.dueDate)
 
   return (
-    <button className={`task-item priority-${issue.priority}`} onClick={() => onSelect(issue.id)}>
+    <button className={`task-item priority-${issue.priority}${busy ? ' task-item-busy' : ''}`} onClick={() => onSelect(issue.id)}>
       <div className="task-item-main">
         <span className="task-subject">{issue.subject}</span>
         {issue.dueDate && (
@@ -50,17 +51,19 @@ export function TaskItem({ issue, onSelect, onQuickResolve, onQuickWorking }: Pr
         <div className="task-quick-actions">
           {onQuickWorking && (
             <button
-              className="task-hover-icon task-quick-btn"
+              className={`task-hover-icon task-quick-btn${busy ? ' task-quick-btn-busy' : ''}`}
               onClick={(e) => onQuickWorking(issue.id, e)}
               title="Pracuji na tom"
-            >▶</button>
+              disabled={busy}
+            >{busy ? '…' : '▶'}</button>
           )}
           {onQuickResolve && (
             <button
-              className="task-hover-icon task-quick-btn task-quick-btn-done"
+              className={`task-hover-icon task-quick-btn task-quick-btn-done${busy ? ' task-quick-btn-busy' : ''}`}
               onClick={(e) => onQuickResolve(issue.id, e)}
               title="Vyřeším"
-            >✓</button>
+              disabled={busy}
+            >{busy ? '…' : '✓'}</button>
           )}
         </div>
       </div>
