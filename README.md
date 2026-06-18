@@ -17,9 +17,17 @@ macOS tray aplikace, která zobrazuje vaše Redmine úkoly přímo v menu baru. 
 ### Detail úkolu
 - Slide-in panel s popisem, komentáři a historií
 - Tlačítko **Vyřeším** — uzavře úkol přesunem do prvního dostupného uzavíracího stavu
+- Tlačítko **Pracuji** — nastaví nakonfigurovaný "in-progress" stav
 - Tlačítko **Předat** — dropdown se členy projektu pro rychlé přeřazení
+- **Přidat komentář** — textarea pro rychlé přidání poznámky přímo z aplikace
+
+### Rychlé akce
+- **Hover ikony** na každém úkolu v seznamu — bez nutnosti otevírat detail
+  - ▶ nastaví úkol jako "v práci" (nebo otevře nastavení, pokud stav není nakonfigurován)
+  - ✓ okamžitě uzavře úkol
 
 ### Přizpůsobení
+- **Workflow** — nastavení stavu "v práci" (auto-detekce z dostupných stavů Redmine)
 - **Velikost písma** — nastavitelná v patičce (Aa − / +), rozsah 12–18 px, uloženo mezi restarty
 - **Nastavení** — Redmine URL, API klíč, interval pollingu, filtrování dle projektu
 
@@ -141,7 +149,7 @@ Aplikace komunikuje s těmito endpointy:
 | `GET /issues/:id.json?include=journals` | Detail úkolu |
 | `GET /issue_statuses.json` | Dostupné stavy |
 | `GET /projects/:id/memberships.json` | Členové projektu |
-| `PUT /issues/:id.json` | Aktualizace úkolu |
+| `PUT /issues/:id.json` | Aktualizace úkolu (stav, přiřazení, komentář) |
 
 ---
 
