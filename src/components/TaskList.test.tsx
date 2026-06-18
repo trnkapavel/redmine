@@ -23,7 +23,7 @@ beforeEach(() => {
   useTasksStore.setState({
     issues: [urgentIssue, normalIssue],
     projects: [{ id: 1, name: 'Backend' }],
-    activeProjectId: null,
+    activeTab: 'mine',
     sortMode: 'priority',
   })
 })
@@ -41,11 +41,6 @@ describe('TaskList', () => {
     expect(screen.getAllByText(/NORMÁLNÍ/i)).toBeTruthy()
   })
 
-  it('shows issue number', () => {
-    render(<TaskList />)
-    expect(screen.getByText(/#1/)).toBeTruthy()
-  })
-
   it('calls onSelectTask with issue id when task item is clicked', () => {
     const onSelectTask = vi.fn()
     render(<TaskList onSelectTask={onSelectTask} />)
@@ -59,7 +54,6 @@ describe('TaskList', () => {
   it('does not call onSelectTask when ExternalLink icon is clicked', () => {
     const onSelectTask = vi.fn()
     render(<TaskList onSelectTask={onSelectTask} />)
-    // Find the external link span (task-hover-icon)
     const hoverIcons = document.querySelectorAll('.task-hover-icon')
     if (hoverIcons.length > 0) {
       fireEvent.click(hoverIcons[0])

@@ -27,7 +27,7 @@ interface Props {
 }
 
 export function TaskList({ onSelectTask }: Props) {
-  const { filteredIssues, activeProjectId } = useTasksStore()
+  const { filteredIssues } = useTasksStore()
   const sorted = filteredIssues()
 
   const grouped = PRIORITY_ORDER_KEYS.reduce((acc, priority) => {
@@ -36,21 +36,10 @@ export function TaskList({ onSelectTask }: Props) {
     return acc
   }, {} as Partial<Record<Priority, typeof sorted>>)
 
-  const handleSelectTask = (id: number) => {
-    onSelectTask?.(id)
-  }
-
   return (
     <div className="task-list">
-      <div className="task-list-toolbar">
-        <span className="task-count">
-          {activeProjectId ? `Projekt · ` : 'Vše · '}
-          {sorted.length} {sorted.length === 1 ? 'task' : 'tasků'}
-        </span>
-      </div>
-
       {sorted.length === 0 && (
-        <div className="task-list-empty">Žádné přiřazené tasky</div>
+        <div className="task-list-empty">Žádné tasky</div>
       )}
 
       {PRIORITY_ORDER_KEYS.map(priority => {
@@ -63,7 +52,7 @@ export function TaskList({ onSelectTask }: Props) {
               {PRIORITY_LABELS[priority]}
             </div>
             {items.map(issue => (
-              <TaskItem key={issue.id} issue={issue} onSelect={handleSelectTask} />
+              <TaskItem key={issue.id} issue={issue} onSelect={id => onSelectTask?.(id)} />
             ))}
           </div>
         )
