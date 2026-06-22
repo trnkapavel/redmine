@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { invoke } from '@tauri-apps/api/core'
 import { ArrowLeft, Check, UserCheck } from 'lucide-react'
+import ReactMarkdown from 'react-markdown'
 import type { IssueDetail, Member } from '../types'
 import { useConfigStore } from '../store/config'
 
@@ -121,7 +122,18 @@ export function TaskDetail({ issueId, onBack, onActionDone }: Props) {
             <div className="task-detail-subject">{detail.subject}</div>
 
             {detail.description && (
-              <div className="task-detail-description">{detail.description}</div>
+              <div className="task-detail-description">
+                <ReactMarkdown
+                  components={{
+                    a: ({ href, children }) => {
+                      const safe = href && /^https?:\/\//i.test(href)
+                      return safe
+                        ? <a href={href} onClick={e => { e.preventDefault(); invoke('open_in_browser', { url: href }) }}>{children}</a>
+                        : <span>{children}</span>
+                    }
+                  }}
+                >{detail.description}</ReactMarkdown>
+              </div>
             )}
 
             {(() => {
