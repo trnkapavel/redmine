@@ -15,7 +15,7 @@ macOS tray aplikace, která zobrazuje vaše Redmine úkoly přímo v menu baru. 
 - **Automatické obnovení** — polling na pozadí, data se pravidelně aktualizují
 
 ### Detail úkolu
-- Slide-in panel s popisem, komentáři a historií
+- Slide-in panel s popisem renderovaným jako **Markdown** (headingy, listy, kód, tučný text)
 - Tlačítko **Vyřeším** — uzavře úkol přesunem do prvního dostupného uzavíracího stavu
 - Tlačítko **Pracuji** — nastaví nakonfigurovaný "in-progress" stav
 - Tlačítko **Předat** — dropdown se členy projektu pro rychlé přeřazení
@@ -30,6 +30,10 @@ macOS tray aplikace, která zobrazuje vaše Redmine úkoly přímo v menu baru. 
 - **Workflow** — nastavení stavu "v práci" (auto-detekce z dostupných stavů Redmine)
 - **Velikost písma** — nastavitelná v patičce (Aa − / +), rozsah 12–18 px, uloženo mezi restarty
 - **Nastavení** — Redmine URL, API klíč, interval pollingu, filtrování dle projektu
+
+### Bezpečnost
+- **API klíč v macOS Keychain** — uložen v systémovém Keychain, ne v JSON souboru
+- **Notarizace Apple** — appka je podepsána a notarizována, Gatekeeper ji akceptuje bez varování
 
 ### macOS integrace
 - Tray ikona s podporou **light/dark mode** (macOS template image)
@@ -133,7 +137,7 @@ redmine-focus/
 | State | Zustand |
 | UI ikony | lucide-react |
 | Backend | Rust (tokio, reqwest, serde) |
-| Persistence | tauri-plugin-store |
+| Persistence | tauri-plugin-store + macOS Keychain (keyring) |
 | Testy | Vitest + Testing Library |
 
 ---
