@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { invoke } from '@tauri-apps/api/core'
 import { ArrowLeft, Check, UserCheck } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
@@ -125,7 +125,7 @@ export function TaskDetail({ issueId, onBack, onActionDone }: Props) {
               <div className="task-detail-description">
                 <ReactMarkdown
                   components={{
-                    a: ({ href, children }) => {
+                    a: ({ href, children }: { href?: string; children?: React.ReactNode }) => {
                       const safe = href && /^https?:\/\//i.test(href)
                       return safe
                         ? <a href={href} onClick={e => { e.preventDefault(); invoke('open_in_browser', { url: href }) }}>{children}</a>

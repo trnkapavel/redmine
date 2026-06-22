@@ -50,20 +50,20 @@ export function TaskItem({ issue, onSelect, onQuickResolve, onQuickWorking, busy
         </span>
         <div className="task-quick-actions">
           {onQuickWorking && (
-            <button
+            <span
+              role="button"
               className={`task-hover-icon task-quick-btn${busy ? ' task-quick-btn-busy' : ''}`}
-              onClick={(e) => onQuickWorking(issue.id, e)}
+              onClick={(e) => { e.stopPropagation(); if (!busy) onQuickWorking(issue.id, e) }}
               title="Pracuji na tom"
-              disabled={busy}
-            >{busy ? '…' : '▶'}</button>
+            >{busy ? '…' : '▶'}</span>
           )}
           {onQuickResolve && (
-            <button
+            <span
+              role="button"
               className={`task-hover-icon task-quick-btn task-quick-btn-done${busy ? ' task-quick-btn-busy' : ''}`}
-              onClick={(e) => onQuickResolve(issue.id, e)}
+              onClick={(e) => { e.stopPropagation(); if (!busy) onQuickResolve(issue.id, e) }}
               title="Vyřeším"
-              disabled={busy}
-            >{busy ? '…' : '✓'}</button>
+            >{busy ? '…' : '✓'}</span>
           )}
         </div>
       </div>

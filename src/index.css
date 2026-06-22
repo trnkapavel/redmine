@@ -89,10 +89,10 @@ button { background: none; border: none; cursor: pointer; color: inherit; font-f
 .task-deadline.soon { color: var(--high); font-weight: 500; }
 .task-meta { color: var(--text-secondary); font-size: 11px; }
 .task-quick-actions { display: flex; gap: 4px; flex-shrink: 0; }
-.task-quick-btn { padding: 2px 6px; border-radius: 4px; font-size: 12px; line-height: 1; background: rgba(255,255,255,0.08); }
-.task-quick-btn:hover { background: rgba(255,255,255,0.16); color: var(--text-primary); }
-.task-quick-btn-done:hover { background: rgba(72,187,120,0.2); color: #48bb78; }
-.task-quick-btn-busy { opacity: 1 !important; background: rgba(255,255,255,0.12) !important; color: var(--text-muted) !important; cursor: wait !important; }
+.task-quick-btn { padding: 2px 6px; border-radius: 4px; font-size: 12px; line-height: 1; background: transparent; color: #000; border: 1px solid rgba(0,0,0,0.35); cursor: pointer; user-select: none; }
+.task-quick-btn:hover { background: rgba(0,0,0,0.08); border-color: rgba(0,0,0,0.6); color: #000; }
+.task-quick-btn-done:hover { background: rgba(72,187,120,0.15); border-color: #48bb78; color: #2d8a56; }
+.task-quick-btn-busy { opacity: 1 !important; background: rgba(255,255,255,0.12) !important; color: var(--text-muted) !important; cursor: wait !important; pointer-events: none; }
 .task-item-busy { opacity: 0.6; pointer-events: none; }
 
 /* Footer */
