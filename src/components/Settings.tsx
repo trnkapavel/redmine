@@ -13,6 +13,8 @@ export function Settings({ onClose }: Props) {
   const [form, setForm] = useState<AppConfig>(config)
   const [version, setVersion] = useState('')
   const [allStatuses, setAllStatuses] = useState<IssueStatus[]>([])
+  const [updateState, setUpdateState] = useState<'idle' | 'checking' | 'available' | 'installing' | 'uptodate' | 'error'>('idle')
+  const [updateVersion, setUpdateVersion] = useState<string | null>(null)
 
   useEffect(() => { getVersion().then(setVersion) }, [])
 
@@ -38,6 +40,30 @@ export function Settings({ onClose }: Props) {
 
   const toggle = (key: keyof AppConfig) =>
     setForm(f => ({ ...f, [key]: !f[key] }))
+
+  const handleCheckUpdate = async () => {
+    setUpdateState('checking')
+    try {
+      const info = await invoke<{ available: boolean; version: string | null }>('check_update_cmd')
+      if (info.available) {
+        setUpdateVersion(info.version)
+        setUpdateState('available')
+      } else {
+        setUpdateState('uptodate')
+      }
+    } catch {
+      setUpdateState('error')
+    }
+  }
+
+  const handleInstallUpdate = async () => {
+    setUpdateState('installing')
+    try {
+      await invoke('install_update_cmd')
+    } catch {
+      setUpdateState('error')
+    }
+  }
 
   return (
     <div className="settings-overlay">
@@ -146,6 +172,33 @@ export function Settings({ onClose }: Props) {
                 <option key={s.id} value={s.id}>{s.name}</option>
               ))}
             </select>
+          </div>
+        </section>
+
+        <section className="settings-section">
+          <div className="settings-section-label">AKTUALIZACE</div>
+          <div className="settings-row">
+            <span style={{ fontSize: 11, color: 'var(--text-secondary)' }}>
+              {updateState === 'idle' && 'Kliknutím zkontroluj dostupné aktualizace'}
+              {updateState === 'checking' && 'Kontroluji…'}
+              {updateState === 'uptodate' && 'Máš nejnovější verzi'}
+              {updateState === 'available' && `Dostupná verze ${updateVersion}`}
+              {updateState === 'installing' && 'Stahuji a instaluji…'}
+              {updateState === 'error' && 'Nepodařilo se zkontrolovat aktualizace'}
+            </span>
+            {updateState === 'available' ? (
+              <button className="settings-btn-save" style={{ padding: '4px 10px', fontSize: 11 }} onClick={handleInstallUpdate}>
+                Instalovat
+              </button>
+            ) : (
+              <button
+                className="settings-pill"
+                onClick={handleCheckUpdate}
+                disabled={updateState === 'checking' || updateState === 'installing'}
+              >
+                {updateState === 'checking' ? '…' : 'Zkontrolovat'}
+              </button>
+            )}
           </div>
         </section>
 

@@ -14,6 +14,7 @@ fn main() {
         .plugin(tauri_plugin_autostart::init(tauri_plugin_autostart::MacosLauncher::LaunchAgent, None))
         .plugin(tauri_plugin_store::Builder::default().build())
         .plugin(tauri_plugin_shell::init())
+        .plugin(tauri_plugin_updater::Builder::new().build())
         .setup(|app| {
             use tauri_plugin_store::StoreExt;
             let store = app.store_builder("config.json").build()?;
@@ -147,7 +148,9 @@ fn main() {
             redmine_focus_lib::commands::get_issue_detail,
             redmine_focus_lib::commands::update_issue_cmd,
             redmine_focus_lib::commands::fetch_statuses_cmd,
-            redmine_focus_lib::commands::add_note_cmd
+            redmine_focus_lib::commands::add_note_cmd,
+            redmine_focus_lib::commands::check_update_cmd,
+            redmine_focus_lib::commands::install_update_cmd
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

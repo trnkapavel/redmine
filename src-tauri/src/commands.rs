@@ -95,3 +95,34 @@ pub async fn add_note_cmd(state: State<'_, AppState>, id: u32, notes: String) ->
     let (url, key) = require_config(&state)?;
     add_note(&url, &key, id, notes).await.map_err(|e| e.to_string())
 }
+
+#[derive(serde::Serialize)]
+pub struct UpdateInfo {
+    pub available: bool,
+    pub version: Option<String>,
+    pub body: Option<String>,
+}
+
+#[tauri::command]
+pub async fn check_update_cmd(app: tauri::AppHandle) -> Result<UpdateInfo, String> {
+    use tauri_plugin_updater::UpdaterExt;
+    match app.updater().map_err(|e| e.to_string())?.check().await {
+        Ok(Some(update)) => Ok(UpdateInfo {
+            available: true,
+            version: Some(update.version.clone()),
+            body: update.body.clone(),
+        }),
+        Ok(None) => Ok(UpdateInfo { available: false, version: None, body: None }),
+        Err(e) => Err(e.to_string()),
+    }
+}
+
+#[tauri::command]
+pub async fn install_update_cmd(app: tauri::AppHandle) -> Result<(), String> {
+    use tauri_plugin_updater::UpdaterExt;
+    let update = app.updater().map_err(|e| e.to_string())?
+        .check().await.map_err(|e| e.to_string())?
+        .ok_or("Žádná aktualizace není dostupná".to_string())?;
+    update.download_and_install(|_, _| {}, || {}).await.map_err(|e| e.to_string())?;
+    app.restart();
+}
