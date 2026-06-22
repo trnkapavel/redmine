@@ -1,4 +1,28 @@
 use serde::{Deserialize, Serialize};
+use keyring::Entry;
+
+const KEYCHAIN_SERVICE: &str = "cz.redminefocus.app";
+const KEYCHAIN_ACCOUNT: &str = "api_key";
+
+fn keychain_set(value: &str) {
+    if let Ok(entry) = Entry::new(KEYCHAIN_SERVICE, KEYCHAIN_ACCOUNT) {
+        let _ = entry.set_password(value);
+    }
+}
+
+fn keychain_get() -> Option<String> {
+    Entry::new(KEYCHAIN_SERVICE, KEYCHAIN_ACCOUNT)
+        .ok()
+        .and_then(|e| e.get_password().ok())
+        .filter(|s| !s.is_empty())
+}
+
+#[allow(dead_code)]
+fn keychain_delete() {
+    if let Ok(entry) = Entry::new(KEYCHAIN_SERVICE, KEYCHAIN_ACCOUNT) {
+        let _ = entry.delete_credential();
+    }
+}
 
 fn default_font_size() -> u32 { 14 }
 
@@ -40,9 +64,18 @@ pub fn load_config(store: &tauri_plugin_store::Store<tauri::Wry>) -> Config {
     let url = store.get("redmine_url")
         .and_then(|v| v.as_str().map(|s| s.to_string()))
         .unwrap_or_default();
-    let api_key = store.get("api_key")
-        .and_then(|v| v.as_str().map(|s| s.to_string()))
-        .unwrap_or_default();
+    // Načteme z Keychain; pokud tam není, zkusíme migrovat ze store
+    let api_key = keychain_get().unwrap_or_else(|| {
+        let from_store = store.get("api_key")
+            .and_then(|v| v.as_str().map(|s| s.to_string()))
+            .unwrap_or_default();
+        if !from_store.is_empty() {
+            keychain_set(&from_store);
+            let _ = store.delete("api_key");
+            let _ = store.save();
+        }
+        from_store
+    });
     let poll_interval = store.get("poll_interval_minutes")
         .and_then(|v| v.as_u64())
         .unwrap_or(15);
@@ -85,7 +118,7 @@ pub fn load_config(store: &tauri_plugin_store::Store<tauri::Wry>) -> Config {
 
 pub fn save_config(store: &tauri_plugin_store::Store<tauri::Wry>, config: &Config) {
     store.set("redmine_url", config.redmine_url.clone());
-    store.set("api_key", config.api_key.clone());
+    keychain_set(&config.api_key);
     store.set("poll_interval_minutes", config.poll_interval_minutes);
     store.set("notify_new_issue", config.notify_new_issue);
     store.set("notify_updated", config.notify_updated);
