@@ -5,7 +5,7 @@
   "platforms": {
     "darwin-aarch64": {
       "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVRekR3RUtjak5VOU9RSlFzWkVHTXdVdlNtTWQ0dm9CWE0ybWpMa2hMK1F4MncvbEJORXVGcG5pTENEUDJDYWo1NUF6eGVzSG9sd2pSVE5YeHJjZmM4NWl2bDVMbTY3YlFrPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzgyMjAwNjQ2CWZpbGU6UmVkbWluZSBGb2N1cy5hcHAudGFyLmd6CjNCSjZVb2dKNnNxNFBqN3A1Z0dPQjdZZXI3SU1xY0V0cVJ2WDkxT1paYkwzbXRBcFI2MythQ3Jwd3RIRURMdk9nSXRFaHk3TG9tcysxM1ZKdEZYd0NnPT0K",
-      "url": "https://github.com/trnkapavel/redmine/releases/download/v0.3.2/Redmine.Focus_0.3.2_aarch64.app.tar.gz"
+      "url": "https://github.com/trnkapavel/redmine/releases/download/v0.3.2/Redmine.Focus.app.tar.gz"
     }
   }
 }

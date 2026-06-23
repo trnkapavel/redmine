@@ -32,7 +32,7 @@ cat > docs/latest.json <<EOF
   "platforms": {
     "darwin-aarch64": {
       "signature": "$SIG",
-      "url": "https://github.com/trnkapavel/redmine/releases/download/v$VERSION/Redmine.Focus_${VERSION}_aarch64.app.tar.gz"
+      "url": "https://github.com/trnkapavel/redmine/releases/download/v$VERSION/Redmine.Focus.app.tar.gz"
     }
   }
 }
