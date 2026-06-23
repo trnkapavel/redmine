@@ -1,6 +1,6 @@
 [package]
 name = "redmine-focus"
-version = "0.3.1"
+version = "0.3.2"
 description = "A Tauri App"
 authors = ["you"]
 edition = "2021"
@@ -35,7 +35,6 @@ serde_json = "1"
 tokio = { version = "1", features = ["full"] }
 chrono = { version = "0.4", features = ["serde"] }
 thiserror = "1"
-keyring = "3"
 
 [dev-dependencies]
 mockito = "1"
